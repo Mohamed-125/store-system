@@ -10,12 +10,17 @@ $whiteColor: #d3d2d2;
   flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  direction: rtl;
   gap: 15px;
   grid-auto-rows: max-content;
   .buypage-product-div {
     border-radius: 10px;
     border: 1px solid $whiteColor;
+    max-width: 250px;
     cursor: pointer;
+    img {
+      width: 100%;
+    }
     &:hover {
       scale: 1.03;
       opacity: 0.9;
