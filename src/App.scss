@@ -1,0 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap");
+
+$blueColor: rgb(0, 191, 255);
+$errorColor: rgb(255, 78, 78);
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Cairo", sans-serif !important;
+}
+
+.container {
+  max-width: 1260px;
+  margin-inline: auto;
+  padding: 20px 60px;
+}
+
+@mixin buttonSytle($state) {
+  width: 100%;
+  max-width: 500px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  @if ($state == error) {
+    background-color: $errorColor;
+  } @else {
+    background-color: $blueColor;
+  }
+  padding: 10px 20px;
+  border-radius: 10px;
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  transition: 0.3s all ease;
+  &:hover {
+    @if ($state == error) {
+      background-color: rgba(255, 78, 78, 0.802);
+    } @else {
+      background-color: rgba(0, 191, 255, 0.817);
+    }
+  }
+}
+
+.btn {
+  @include buttonSytle(r);
+}
+.error-btn {
+  @include buttonSytle(error);
+}
+
+.MuiBox-root {
+  position: relative;
+  z-index: 100;
+}
+@media (max-width: 700px) {
+  .container {
+    max-width: 1260px;
+    margin-inline: auto;
+    padding: 20px 30px;
+  }
+}
