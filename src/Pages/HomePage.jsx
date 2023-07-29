@@ -14,11 +14,10 @@ import {
 import { db } from "../firebase";
 import DataTable from "../components/DataTable/DataTable";
 
-const HomePage = () => {
+const HomePage = ({ getProducts, products, setProducts }) => {
   const [productName, setProductName] = useState("");
   const [productPrice, setProductPrice] = useState();
   const [productQuantity, setProductQuantity] = useState();
-  const [products, setProducts] = useState([]);
   const [id, setId] = useState("");
   const [job, setJob] = useState("add");
   const [modal, setModal] = useState(false);
@@ -41,21 +40,7 @@ const HomePage = () => {
     reset,
   } = useForm({ resolver: yupResolver(schema) });
 
-  const getProducts = async () => {
-    await getDocs(collection(db, "products")).then((product) => {
-      const products = product.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-
-      setProducts(products);
-      console.log(products);
-    });
-  };
-
   const addProduct = async (data) => {
-    console.log({ data });
-
     const docRef = await addDoc(collection(db, "products"), {
       name: data.name,
       price: data.price,
@@ -64,10 +49,12 @@ const HomePage = () => {
     getProducts();
     reset();
     setModal(false);
+    setProductName("");
+    setProductPrice();
+    setProductQuantity();
   };
 
   const updataProudct = async (data) => {
-    console.log("update");
     const updataDoc = await updateDoc(doc(db, "products", id), {
       name: data.name,
       price: data.price,
@@ -76,6 +63,9 @@ const HomePage = () => {
     getProducts();
     reset();
     setModal(false);
+    setProductName("");
+    setProductPrice();
+    setProductQuantity();
   };
 
   const deleteProductHandler = async (id) => {
@@ -101,6 +91,7 @@ const HomePage = () => {
         setId={setId}
         deleteProductHandler={deleteProductHandler}
         setProductQuantity={setProductQuantity}
+        tableHeads={["اسم المنتج", "سعر المنتج", "كميه المنتج"]}
       />
       <Form
         setModal={setModal}
