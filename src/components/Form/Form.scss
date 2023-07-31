@@ -31,12 +31,13 @@
   display: flex;
   gap: 10px;
   flex-direction: column;
-  text-align: right;
+  text-align: right !important;
 
   input {
     border: 1px solid gray;
     padding: 7px 20px;
     border-radius: 5px;
+    text-align: right !important;
     direction: rtl;
   }
   p {

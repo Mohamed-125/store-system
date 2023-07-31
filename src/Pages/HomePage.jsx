@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Form from "../components/Form/Form";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import {
   collection,
   addDoc,
@@ -13,11 +10,13 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import DataTable from "../components/DataTable/DataTable";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 const HomePage = ({ getProducts, products, setProducts }) => {
-  const [productName, setProductName] = useState("");
-  const [productPrice, setProductPrice] = useState();
-  const [productQuantity, setProductQuantity] = useState();
+  // const [productName, setProductName] = useState("");
+  // const [productPrice, setProductPrice] = useState();
+  // const [productQuantity, setProductQuantity] = useState();
   const [id, setId] = useState("");
   const [job, setJob] = useState("add");
   const [modal, setModal] = useState(false);
@@ -26,47 +25,41 @@ const HomePage = ({ getProducts, products, setProducts }) => {
     name: yup.string().required("يجب ادخال هذا الحقل"),
     price: yup
       .number()
-      .required("يجب ادخال هذاالحقل ويجب ان يكون رقما")
-      .typeError("يجب ادخال هذاالحقل ويجب ان يكون رقما"),
+      .required("يجب ادخال هذا الحقل ويجب ان يكون رقما")
+      .typeError("يجب ادخال هذا الحقل ويجب ان يكون رقما"),
     quantity: yup
       .number()
-      .required("يجب ادخال هذاالحقل ويجب ان يكون رقما")
-      .typeError("يجب ادخال هذاالحقل ويجب ان يكون رقما"),
+      .required("يجب ادخال هذا الحقل ويجب ان يكون رقما")
+      .typeError("يجب ادخال هذا الحقل ويجب ان يكون رقما"),
   });
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm({ resolver: yupResolver(schema) });
 
-  const addProduct = async (data) => {
-    const docRef = await addDoc(collection(db, "products"), {
-      name: data.name,
-      price: data.price,
-      quantity: data.quantity,
-    });
+  const onSubmit = async ({ name, price, quantity }, actions) => {
+    if (job === "add") {
+      const docRef = await addDoc(collection(db, "products"), {
+        name,
+        price,
+        quantity,
+      });
+    } else {
+      const updateRef = await updateDoc(doc(db, "products", id), {
+        name,
+        price,
+        quantity,
+      });
+    }
+    actions.resetForm();
     getProducts();
-    reset();
     setModal(false);
-    setProductName("");
-    setProductPrice();
-    setProductQuantity();
   };
-
-  const updataProudct = async (data) => {
-    const updataDoc = await updateDoc(doc(db, "products", id), {
-      name: data.name,
-      price: data.price,
-      quantity: data.quantity,
-    });
-    getProducts();
-    reset();
-    setModal(false);
-    setProductName("");
-    setProductPrice();
-    setProductQuantity();
-  };
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      quantity: "",
+      price: "",
+    },
+    validationSchema: schema,
+    onSubmit,
+  });
 
   const deleteProductHandler = async (id) => {
     const answer = confirm("هل تريد حذف ذلك المنتج ؟ ");
@@ -75,6 +68,10 @@ const HomePage = ({ getProducts, products, setProducts }) => {
       getProducts();
     }
   };
+
+  useEffect(() => {
+    console.log(job);
+  }, [job]);
   useEffect(() => {
     getProducts();
   }, []);
@@ -83,48 +80,32 @@ const HomePage = ({ getProducts, products, setProducts }) => {
     <div>
       <DataTable
         products={products}
-        job={job}
         setJob={setJob}
         setModal={setModal}
-        setProductName={setProductName}
-        setProductPrice={setProductPrice}
         setId={setId}
+        setFieldValue={formik.setFieldValue}
         deleteProductHandler={deleteProductHandler}
-        setProductQuantity={setProductQuantity}
-        tableHeads={["اسم المنتج", "سعر المنتج", "كميه المنتج"]}
+        tableHeads={["اسم المنتج", "سعر المنتج", "كميه المنتج", "أعدادات"]}
       />
       <Form
         setModal={setModal}
         modal={modal}
-        handleSubmit={
-          job === "add" ? handleSubmit(addProduct) : handleSubmit(updataProudct)
-        }
+        formik={formik}
         job={job}
-        register={register}
-        errors={errors}
         formInputs={[
           {
             title: "الأسم",
             name: "name",
-            required: true,
-            state: productName,
-            setState: setProductName,
             type: "text",
           },
           {
             title: "السعر",
             name: "price",
-            required: true,
-            state: productPrice,
-            setState: setProductPrice,
             type: "number",
           },
           {
             title: "الكميه",
             name: "quantity",
-            required: true,
-            state: productQuantity,
-            setState: setProductQuantity,
             type: "number",
           },
         ]}

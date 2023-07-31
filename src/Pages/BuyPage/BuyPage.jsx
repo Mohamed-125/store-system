@@ -1,9 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./BuyPage.scss";
+import DataTable from "../../components/DataTable/DataTable";
+import { NotificationManager } from "react-notifications";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../../firebase";
+
 const BuyPage = ({ products }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchWord, setSearchWord] = useState("");
-
   useEffect(() => {
     console.log(selectedProducts);
   }, [selectedProducts]);
@@ -47,7 +51,7 @@ const BuyPage = ({ products }) => {
     }
   });
 
-  const payHandler = () => {
+  const payHandler = async () => {
     let id;
     if (
       selectedProducts.some((pro) => {
@@ -57,15 +61,60 @@ const BuyPage = ({ products }) => {
         }
       })
     ) {
-      document.querySelector(`.${id} input`).focus();
+      document
+        .getElementsByClassName(`${id}`)[0]
+        .children[1].children[3].children[0].focus();
       alert("يجب ادخل كميه");
+    } else {
+      const invoiceId = Math.round(Math.random() * 100000000000 + 1);
+      window.print();
+
+      try {
+        const docRef = await addDoc(collection(db, "invoices"), {
+          "invoice-number": invoiceId,
+          "invoice-date": new Date().toLocaleString("ar"),
+          "invoice-price": selectedProducts.reduce((prev, curr) => {
+            return prev + curr.price * Number(curr.selectedQuantity);
+          }, 0),
+          "invoice-products": selectedProducts,
+        });
+        console.log(docRef);
+        NotificationManager.success(
+          ` ${invoiceId + "  "}تم انشاء فاتوره برقم `,
+          "تم انشاء الفاتوره والدفع بنجاح",
+          6000
+        );
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
   return (
     <>
+      <div className="printTable">
+        <p>التاريخ : {new Date().toLocaleString("ar")} </p>
+        <p>رقم الفاتوره : {Math.random() * 43438787 + 1} </p>
+        <DataTable
+          print={true}
+          products={selectedProducts}
+          tableHeads={[
+            "اسم المنتج",
+            "سعر المنتج",
+            "كميه المنتج",
+            "اجمالي سعر المنتج",
+          ]}
+        />
+        <p className="mb-5 text-xl ">
+          الأجمالي :
+          {selectedProducts.reduce((prev, curr) => {
+            return prev + curr.price * Number(curr.selectedQuantity);
+          }, 0)}
+          ج.م
+        </p>
+      </div>
       <div className="flex justify-center">
-        <div>
+        <div className="buypage-search-div">
           <h2 className="text-center text-xl mt-5 font-bold">ابحث عن منتج</h2>
           <input
             type="text"
@@ -120,7 +169,11 @@ const BuyPage = ({ products }) => {
                   <img src="https://t4.ftcdn.net/jpg/00/64/67/27/240_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg" />
                   <div className="buypage-card-product-details">
                     <p>الاسم : {product.name} </p>
-                    <p>{product.price} : السعر</p>
+                    <p>{product.price} : سعر المنتج</p>
+                    <p>
+                      {product.price * product.selectedQuantity} : سعر المنتج
+                      الأجمالي
+                    </p>
                     <p>{product.quantity} : الكميه المتاحه</p>
                     <p>
                       <input
@@ -133,8 +186,6 @@ const BuyPage = ({ products }) => {
                           } else {
                             setSelectedProducts((pre) => {
                               return pre.map((pro) => {
-                                console.log(pro.id === product.id);
-
                                 if (pro.id === product.id) {
                                   return {
                                     ...pro,
@@ -172,19 +223,29 @@ const BuyPage = ({ products }) => {
             </p>
           )}
           {selectedProducts.length > 0 && (
-            <div className="buypage-products-buttons flex gap-4 sm:flex-direction-column">
-              <button
-                className="error-btn"
-                onClick={() => {
-                  setSelectedProducts([]);
-                }}
-              >
-                الغاء
-              </button>
-              <button className="btn" onClick={() => payHandler()}>
-                دفع
-              </button>
-            </div>
+            <>
+              <p className="mb-5 text-xl ">
+                الأجمالي :
+                {selectedProducts.reduce((prev, curr) => {
+                  console.log(prev, curr);
+                  return prev + curr.price * Number(curr.selectedQuantity);
+                }, 0)}{" "}
+                ج.م
+              </p>
+              <div className="buypage-products-buttons flex gap-4 sm:flex-direction-column">
+                <button
+                  className="error-btn"
+                  onClick={() => {
+                    setSelectedProducts([]);
+                  }}
+                >
+                  الغاء
+                </button>
+                <button className="btn" onClick={() => payHandler()}>
+                  دفع
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>

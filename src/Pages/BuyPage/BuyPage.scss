@@ -95,3 +95,17 @@ $whiteColor: #d3d2d2;
     }
   }
 }
+.printTable {
+  display: none;
+  text-align: right;
+}
+
+@media print {
+  .buypage-main-div,
+  .buypage-search-div {
+    display: none;
+  }
+  .printTable {
+    display: block;
+  }
+}

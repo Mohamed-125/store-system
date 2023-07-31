@@ -6,6 +6,7 @@ import HomePage from "./Pages/HomePage";
 import BuyPage from "./Pages/BuyPage/BuyPage";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
+import Invoices from "./Pages/invoices/Invoices";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -15,12 +16,17 @@ function App() {
         ...doc.data(),
         id: doc.id,
       }));
-
-      setProducts(products);
       console.log(products);
+      setProducts(products);
     });
   };
   useEffect(() => {
+    // window.addEventListener("keydown", (e) => {
+    //   if (e.key === "Enter") {
+    //     console.log("enter");
+    //     document.querySelector(".addOrEditBtn")?.click();
+    //   }
+    // });
     getProducts();
   }, []);
 
@@ -37,6 +43,7 @@ function App() {
             />
           }
         />
+        <Route path="/invoices" element={<Invoices />} />
         <Route path="/products" element={<Products />} />
         <Route path="/buy-products" element={<BuyPage products={products} />} />
       </Routes>

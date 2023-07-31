@@ -31,9 +31,9 @@ input {
   cursor: pointer;
   color: white;
   @if ($state == error) {
-    background-color: $errorColor;
+    background-color: $errorColor !important;
   } @else {
-    background-color: $blueColor;
+    background-color: $blueColor !important;
   }
   padding: 10px 20px;
   border-radius: 10px;
@@ -44,9 +44,9 @@ input {
   transition: 0.3s all ease;
   &:hover {
     @if ($state == error) {
-      background-color: rgba(255, 78, 78, 0.802);
+      background-color: rgba(255, 78, 78, 0.802) !important;
     } @else {
-      background-color: rgba(0, 191, 255, 0.817);
+      background-color: rgba(0, 191, 255, 0.817) !important;
     }
   }
 }
@@ -68,4 +68,15 @@ input {
     margin-inline: auto;
     padding: 20px 30px;
   }
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
