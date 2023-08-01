@@ -35,7 +35,7 @@ const BuyPage = ({ products }) => {
           quantity: product.quantity,
           selectedQuantity: 1,
           id: product.id,
-          img: product?.img,
+          img: "img",
         },
       ]);
     }
@@ -52,7 +52,6 @@ const BuyPage = ({ products }) => {
   });
 
   const payHandler = async () => {
-    let id;
     if (
       selectedProducts.some((pro) => {
         if (pro.selectedQuantity === "") {
@@ -68,7 +67,14 @@ const BuyPage = ({ products }) => {
     } else {
       const invoiceId = Math.round(Math.random() * 100000000000 + 1);
       window.print();
-
+      console.log(
+        invoiceId,
+        new Date().toLocaleString("ar"),
+        selectedProducts,
+        selectedProducts.reduce((prev, curr) => {
+          return prev + curr.price * Number(curr.selectedQuantity);
+        }, 0)
+      );
       try {
         const docRef = await addDoc(collection(db, "invoices"), {
           "invoice-number": invoiceId,
@@ -168,7 +174,9 @@ const BuyPage = ({ products }) => {
                 <div key={id} id={id} className={`buypage-cart-product ${id}`}>
                   <img src="https://t4.ftcdn.net/jpg/00/64/67/27/240_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg" />
                   <div className="buypage-card-product-details">
-                    <p>الاسم : {product.name} </p>
+                    <p style={{ direction: "rtl", justifyContent: "start" }}>
+                      الاسم : {product.name}{" "}
+                    </p>
                     <p>{product.price} : سعر المنتج</p>
                     <p>
                       {product.price * product.selectedQuantity} : سعر المنتج

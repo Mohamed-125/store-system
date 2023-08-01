@@ -18,11 +18,12 @@ const Invoices = () => {
   useEffect(() => {
     getInvoices();
   }, []);
+
   return (
     <div>
       <DataTable
         products={invoices}
-        invoice={true}
+        invoices={true}
         tableHeads={["رقم الفاتوره", "تاريخ الفاتوره", "سعر الفاتوره"]}
       />
     </div>

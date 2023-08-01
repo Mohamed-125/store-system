@@ -25,6 +25,16 @@
   left: 50%;
   transform: translate(-50%, 0%);
   z-index: 1000;
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
 }
 
 .input-div {
@@ -45,3 +55,4 @@
     margin-bottom: 10px;
   }
 }
+/* Chrome, Safari, Edge, Opera */

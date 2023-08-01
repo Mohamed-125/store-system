@@ -5,8 +5,10 @@ import TablePagination from "./TablePagination";
 // import DeleteIcon from "@mui/icons-material/Delete";
 import { AiFillEdit, AiFillDelete } from "react-icons/ai";
 import { useFormik } from "formik";
+import { Link } from "react-router-dom";
 
 export default function DataTable({
+  invoices = false,
   invoice = false,
   products,
   setModal,
@@ -22,21 +24,22 @@ export default function DataTable({
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(print ? 50 : 5);
   const [startIndex, setStartIndex] = useState(1);
-  const visibleRows = products.slice(startIndex - 1, rowsPerPage * page);
+  const visibleRows = products?.slice(startIndex - 1, rowsPerPage * page);
 
   return (
     <>
-      <div className="container !p-0 flex justify-between items-center mt-[20px]">
+      <div className="container !p-0 flex flex-row-reverse justify-between items-center mt-[20px]">
         <Typography
           sx={{ flex: "1 1 100%" }}
           variant="h4"
           id="tableTitle"
           component="div"
+          className="text-end"
         >
           {!print ? "المنتجات" : "الفاتوره"}{" "}
         </Typography>
 
-        {!print && (
+        {print || invoice || invoices ? null : (
           <button
             className="btn max-w-[120px]"
             onClick={() => {
@@ -58,23 +61,37 @@ export default function DataTable({
             </tr>
           </thead>
           <tbody>
-            {products.length > 0
+            {products?.length > 0
               ? visibleRows.map((product) => {
-                  return invoice ? (
-                    <tr key={product.id}>
-                      <td>{product["invoice-number"]}</td>
-                      <td style={{ direction: "rtl", justifyContent: "start" }}>
-                        {product["invoice-date"]}
-                      </td>
-                      <td>{product["invoice-price"]} ج.م</td>
-                    </tr>
+                  return invoices ? (
+                    <Link to={`${product.id}`} key={product.id}>
+                      <tr className="cursor-pointer hover:opacity-90 hover:bg-slate-100">
+                        <td>{product["invoice-number"]}</td>
+                        <td
+                          style={{ direction: "rtl", justifyContent: "start" }}
+                        >
+                          {product["invoice-date"]}
+                        </td>
+                        <td>{product["invoice-price"]} ج.م</td>
+                      </tr>
+                    </Link>
                   ) : (
                     <tr key={product.id}>
                       <td>{product.name}</td>
-                      <td>{product.price}</td>
-                      {print && <td>{product.selectedQuantity}</td>}
-                      <td>{product.quantity}</td>
-                      {!print && (
+                      <td className="flex-row-reverse gap-1">
+                        {product.price} <p>ج.م </p>
+                      </td>
+                      {print || invoice ? (
+                        <td>{product.selectedQuantity}</td>
+                      ) : null}
+                      {invoice ? null : <td>{product.quantity}</td>}
+                      {invoice ? (
+                        <td className="flex-row-reverse gap-1">
+                          {product.price * product.selectedQuantity} <p>ج.م </p>
+                        </td>
+                      ) : null}
+
+                      {print || invoice ? null : (
                         <td>
                           <button
                             onClick={() => {
@@ -103,14 +120,14 @@ export default function DataTable({
                 })
               : null}
 
-            {products.length === 0 && (
+            {products?.length === 0 && (
               <tr className="text-3xl text-gray-400 text-center !justify-center  font-bold py-10">
                 <td className=" !justify-center">لا توجد منتجات</td>
               </tr>
             )}
           </tbody>
         </table>
-        {!print && products.length > 5 ? (
+        {!print && products?.length > 5 ? (
           <TablePagination
             rowsPerPage={rowsPerPage}
             page={page}
@@ -120,6 +137,13 @@ export default function DataTable({
           />
         ) : null}
       </div>
+      <p className="container text-2xl text-end font-bold px-0">
+        اجمالي سعر الفاتوره :{" "}
+        {products.reduce((prev, curr) => {
+          return prev + curr.price * Number(curr.selectedQuantity);
+        }, 0)}{" "}
+        ج.م
+      </p>
     </>
   );
 }

@@ -7,6 +7,7 @@ import BuyPage from "./Pages/BuyPage/BuyPage";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import Invoices from "./Pages/invoices/Invoices";
+import Invoice from "./Pages/Invoice";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -44,6 +45,7 @@ function App() {
           }
         />
         <Route path="/invoices" element={<Invoices />} />
+        <Route path="/invoices/:id" element={<Invoice />} />
         <Route path="/products" element={<Products />} />
         <Route path="/buy-products" element={<BuyPage products={products} />} />
       </Routes>
