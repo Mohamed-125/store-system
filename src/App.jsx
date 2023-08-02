@@ -4,30 +4,30 @@ import { Routes, Route } from "react-router-dom";
 import Products from "./Pages/Products";
 import HomePage from "./Pages/HomePage";
 import BuyPage from "./Pages/BuyPage/BuyPage";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import Invoices from "./Pages/invoices/Invoices";
 import Invoice from "./Pages/Invoice";
 
 function App() {
   const [products, setProducts] = useState([]);
+  const [noQuantityProducts, setNoQuantityProducts] = useState([]);
+
   const getProducts = async () => {
     await getDocs(collection(db, "products")).then((product) => {
       const products = product.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      console.log(products);
       setProducts(products);
     });
   };
+
   useEffect(() => {
-    // window.addEventListener("keydown", (e) => {
-    //   if (e.key === "Enter") {
-    //     console.log("enter");
-    //     document.querySelector(".addOrEditBtn")?.click();
-    //   }
-    // });
+    console.log(`noQuantityProducts : ${noQuantityProducts}`);
+  }, [noQuantityProducts]);
+
+  useEffect(() => {
     getProducts();
   }, []);
 
@@ -47,7 +47,17 @@ function App() {
         <Route path="/invoices" element={<Invoices />} />
         <Route path="/invoices/:id" element={<Invoice />} />
         <Route path="/products" element={<Products />} />
-        <Route path="/buy-products" element={<BuyPage products={products} />} />
+        <Route
+          path="/buy-products"
+          element={
+            <BuyPage
+              setProducts={setProducts}
+              setNoQuantityProducts={setNoQuantityProducts}
+              products={products}
+              getProducts={getProducts}
+            />
+          }
+        />
       </Routes>
     </div>
   );

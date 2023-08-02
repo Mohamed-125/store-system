@@ -14,9 +14,6 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 
 const HomePage = ({ getProducts, products, setProducts }) => {
-  // const [productName, setProductName] = useState("");
-  // const [productPrice, setProductPrice] = useState();
-  // const [productQuantity, setProductQuantity] = useState();
   const [id, setId] = useState("");
   const [job, setJob] = useState("add");
   const [modal, setModal] = useState(false);
@@ -70,9 +67,6 @@ const HomePage = ({ getProducts, products, setProducts }) => {
   };
 
   useEffect(() => {
-    console.log(job);
-  }, [job]);
-  useEffect(() => {
     getProducts();
   }, []);
 
@@ -80,6 +74,7 @@ const HomePage = ({ getProducts, products, setProducts }) => {
     <div>
       <DataTable
         products={products}
+        setProducts={setProducts}
         setJob={setJob}
         setModal={setModal}
         setId={setId}

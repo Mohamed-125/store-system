@@ -2,15 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import "./BuyPage.scss";
 import DataTable from "../../components/DataTable/DataTable";
 import { NotificationManager } from "react-notifications";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
 import { db } from "../../firebase";
 
-const BuyPage = ({ products }) => {
+const BuyPage = ({
+  products,
+  setProducts,
+  setNoQuantityProducts,
+  getProducts,
+}) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchWord, setSearchWord] = useState("");
-  useEffect(() => {
-    console.log(selectedProducts);
-  }, [selectedProducts]);
 
   const addToCartHandler = (product) => {
     if (selectedProducts.some((pro) => pro.id === product.id)) {
@@ -51,6 +53,41 @@ const BuyPage = ({ products }) => {
     }
   });
 
+  const deleteProductHandler = async (id) => {
+    await deleteDoc(doc(db, "products", id));
+    getProducts();
+  };
+
+  useEffect(() => {
+    const addNoQuantityProductsToFirebase = async ({
+      name,
+      price,
+      quantity,
+      id,
+    }) => {
+      const docRef = await addDoc(collection(db, "noQuantityProducts"), {
+        name,
+        price,
+        quantity,
+        proudctId: id,
+      });
+      console.log(docRef);
+    };
+    products.map((pro) => {
+      if (pro.quantity === 0) {
+        setNoQuantityProducts((pre) => {
+          return [...pre, pro];
+        });
+        addNoQuantityProductsToFirebase(pro);
+        deleteProductHandler(pro.id);
+        // setProducts((pre) => pre.filter((product) => pro.id !== product.id));
+      }
+    });
+
+    console.log("products", products);
+  }, [products]);
+
+  let id;
   const payHandler = async () => {
     if (
       selectedProducts.some((pro) => {
@@ -61,20 +98,14 @@ const BuyPage = ({ products }) => {
       })
     ) {
       document
-        .getElementsByClassName(`${id}`)[0]
-        .children[1].children[3].children[0].focus();
+        .getElementsByClassName(`${id}`)
+        [id].children[1].children[4].children[0].focus();
+
       alert("يجب ادخل كميه");
     } else {
       const invoiceId = Math.round(Math.random() * 100000000000 + 1);
       window.print();
-      console.log(
-        invoiceId,
-        new Date().toLocaleString("ar"),
-        selectedProducts,
-        selectedProducts.reduce((prev, curr) => {
-          return prev + curr.price * Number(curr.selectedQuantity);
-        }, 0)
-      );
+
       try {
         const docRef = await addDoc(collection(db, "invoices"), {
           "invoice-number": invoiceId,
@@ -84,12 +115,32 @@ const BuyPage = ({ products }) => {
           }, 0),
           "invoice-products": selectedProducts,
         });
-        console.log(docRef);
+
+        setProducts((pre) => {
+          return pre.map((product) => {
+            if (
+              selectedProducts.find((selected) => selected.id === product.id)
+            ) {
+              const target = selectedProducts.find(
+                (selected) => selected.id === product.id
+              );
+              return {
+                ...product,
+                quantity: product.quantity - target.selectedQuantity,
+              };
+            } else {
+              return product;
+            }
+          });
+        });
+
         NotificationManager.success(
           ` ${invoiceId + "  "}تم انشاء فاتوره برقم `,
           "تم انشاء الفاتوره والدفع بنجاح",
           6000
         );
+
+        setSelectedProducts([]);
       } catch (err) {
         console.log(err);
       }
@@ -235,7 +286,6 @@ const BuyPage = ({ products }) => {
               <p className="mb-5 text-xl ">
                 الأجمالي :
                 {selectedProducts.reduce((prev, curr) => {
-                  console.log(prev, curr);
                   return prev + curr.price * Number(curr.selectedQuantity);
                 }, 0)}{" "}
                 ج.م

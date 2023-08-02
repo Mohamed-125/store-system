@@ -6,7 +6,13 @@ const TablePagination = ({
   setPage,
   setStartIndex,
   products,
+  searchWord,
 }) => {
+  console.log(
+    products?.filter((product) =>
+      product.name.toLowerCase().includes(searchWord.toLowerCase())
+    ).length
+  );
   return (
     <div>
       <div className="flex justify-center flex-row-reverse gap-4 items-center my-[20px]">

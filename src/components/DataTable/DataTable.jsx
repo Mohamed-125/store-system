@@ -3,8 +3,12 @@ import "./dataTable.scss";
 import Typography from "@mui/material/Typography";
 import TablePagination from "./TablePagination";
 // import DeleteIcon from "@mui/icons-material/Delete";
-import { AiFillEdit, AiFillDelete } from "react-icons/ai";
-import { useFormik } from "formik";
+import {
+  AiFillEdit,
+  AiFillDelete,
+  AiOutlineArrowUp,
+  AiOutlineArrowDown,
+} from "react-icons/ai";
 import { Link } from "react-router-dom";
 
 export default function DataTable({
@@ -14,6 +18,7 @@ export default function DataTable({
   setModal,
   deleteProductHandler,
   setJob,
+  setProducts,
   setId,
   tableHeads,
   setFieldValue,
@@ -24,7 +29,21 @@ export default function DataTable({
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(print ? 50 : 5);
   const [startIndex, setStartIndex] = useState(1);
-  const visibleRows = products?.slice(startIndex - 1, rowsPerPage * page);
+  const [firstOrlast, setFirstOrLast] = useState("first");
+  const [searchWord, setSearchWord] = useState("");
+
+  const visibleRows = products
+    ?.filter((product) =>
+      product.name.toLowerCase().includes(searchWord.toLowerCase())
+    )
+    ?.sort(function (a, b) {
+      if (firstOrlast === "first") {
+        return a.name.localeCompare(b.name, ["ar"]);
+      } else {
+        return b.name.localeCompare(a.name, ["ar"]);
+      }
+    })
+    ?.slice(startIndex - 1, rowsPerPage * page);
 
   return (
     <>
@@ -51,12 +70,49 @@ export default function DataTable({
           </button>
         )}
       </div>
+      <div className="container flex flex-col gap-3 mt-5 items-end !p-0">
+        <h2 className="text-end text-xl mt-5 font-bold">ابحث عن منتج</h2>
+        <input
+          type="text"
+          style={{ direction: "rtl" }}
+          className="mt-2 mb-5 p-2 text-right px-5 w-full max-w-md min-w-[280px] "
+          onChange={(e) => {
+            setSearchWord(e.target.value);
+          }}
+        />
+      </div>
       <div className="table-container container">
         <table>
           <thead>
             <tr>
               {tableHeads.map((head, n) => {
-                return <th key={n}>{head}</th>;
+                return (
+                  <th
+                    key={n}
+                    onClick={() => {
+                      if (head === "اسم المنتج") {
+                        setFirstOrLast((pre) => {
+                          if (pre === "first") {
+                            return "last";
+                          } else {
+                            return "first";
+                          }
+                        });
+                      }
+                    }}
+                    style={{ gap: "10px", cursor: "pointer" }}
+                  >
+                    {head === "اسم المنتج" ? (
+                      firstOrlast === "first" ? (
+                        <AiOutlineArrowUp />
+                      ) : (
+                        <AiOutlineArrowDown />
+                      )
+                    ) : null}
+
+                    {head}
+                  </th>
+                );
               })}
             </tr>
           </thead>
@@ -118,7 +174,7 @@ export default function DataTable({
                     </tr>
                   );
                 })
-              : null}
+              : "لا يوجد اي منتجات"}
 
             {products?.length === 0 && (
               <tr className="text-3xl text-gray-400 text-center !justify-center  font-bold py-10">
@@ -127,23 +183,29 @@ export default function DataTable({
             )}
           </tbody>
         </table>
-        {!print && products?.length > 5 ? (
+        {!print &&
+        products?.filter((product) =>
+          product.name.toLowerCase().includes(searchWord.toLowerCase())
+        ).length > 5 ? (
           <TablePagination
             rowsPerPage={rowsPerPage}
             page={page}
             setPage={setPage}
             setStartIndex={setStartIndex}
             products={products}
+            searchWord={searchWord}
           />
         ) : null}
       </div>
-      <p className="container text-2xl text-end font-bold px-0">
-        اجمالي سعر الفاتوره :{" "}
-        {products.reduce((prev, curr) => {
-          return prev + curr.price * Number(curr.selectedQuantity);
-        }, 0)}{" "}
-        ج.م
-      </p>
+      {invoice && (
+        <p className="container text-2xl text-end font-bold px-0">
+          اجمالي سعر الفاتوره :{" "}
+          {products.reduce((prev, curr) => {
+            return prev + curr.price * Number(curr.selectedQuantity);
+          }, 0)}{" "}
+          ج.م
+        </p>
+      )}
     </>
   );
 }
