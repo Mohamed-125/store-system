@@ -7,12 +7,17 @@ import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import Invoices from "./Pages/invoices/Invoices";
 import Invoice from "./Pages/Invoice";
-import { AiFillHome, AiOutlineSearch, AiFillHeart } from "react-icons/ai";
+
+import { AiFillHome} from "react-icons/ai";
+import { MdProductionQuantityLimits} from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
-import { BsFillMapFill } from "react-icons/bs";
+import { FcSalesPerformance } from "react-icons/fc";
+import { FaFileInvoiceDollar } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
+import {FaProductHunt} from "react-icons/fa"
 import Home from "./Pages/Home/Home";
 import Profile from "./Pages/profile/Profile";
+import NoQuantityProduct from "./Pages/noQuantityProduct/NoQuantityProduct";
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -28,13 +33,24 @@ function App() {
       setProducts(products);
     });
   };
-
+  //get no quantity Products
+  // const getNoQuantityProducts=async () => {
+  //   await  getDocs(collection(db,"noQuantityProducts")).then ((noQuantityProducts)=>{
+  //     const noQuantity =noQuantityProducts.docs.map((doc)=>({
+  //       ...doc.data(),
+  //       id:doc.id,
+  //     }))
+  //     setNoQuantityProducts(noQuantity);
+  //   })
+  //   }
   useEffect(() => {
+    // console.log(`noQuantityProducts : ${noQuantityProducts}`);
     console.log(`noQuantityProducts : ${noQuantityProducts}`);
   }, [noQuantityProducts]);
 
   useEffect(() => {
     getProducts();
+    // getNoQuantityProducts()
   }, []);
 
   return (
@@ -49,17 +65,21 @@ function App() {
             <AiFillHome /> <p>الرئيسيه</p>
           </Link>
           <Link to="/products ">
-            <AiFillHeart /> <p>المنتجات</p>
+            <FaProductHunt/> <p>المنتجات</p>
           </Link>
           <Link to="/invoices">
-            <BsFillMapFill /> <p>فاتوره</p>
+            < FcSalesPerformance/> <p>فاتوره</p>
           </Link>
           <Link to="/buy-products ">
-            <AiOutlineSearch /> <p>بيع المنتجات</p>
+            <FaFileInvoiceDollar /> <p>بيع المنتجات</p>
+          </Link>
+          <Link to="/noQuantity-product">
+            <MdProductionQuantityLimits />
+            <p>منتجات فارغه</p>
           </Link>
           <Link to="/profile">
             <CgProfile />
-            <p>Profile</p>
+            <p>ملف الشخصى</p>
           </Link>
         </div>
         <div
@@ -72,7 +92,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<Home/>}
+          element={<Home />}
         />
         <Route path="/invoices" element={<Invoices />} />
         <Route path="/profile" element={<Profile />} />
@@ -94,6 +114,16 @@ function App() {
               products={products}
               getProducts={getProducts}
             />
+          }
+        />
+        <Route
+          path="/noQuantity-product"
+          element={
+            <NoQuantityProduct
+            // getNoQuantityProducts={getNoQuantityProducts}
+            // noQuantityProducts={noQuantityProducts}
+            // setNoQuantityProducts={setNoQuantityProducts}
+             />
           }
         />
       </Routes>

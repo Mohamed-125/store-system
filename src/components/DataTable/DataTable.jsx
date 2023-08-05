@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./dataTable.scss";
 import Typography from "@mui/material/Typography";
 import TablePagination from "./TablePagination";
@@ -31,10 +31,13 @@ export default function DataTable({
   const [startIndex, setStartIndex] = useState(1);
   const [firstOrlast, setFirstOrLast] = useState("first");
   const [searchWord, setSearchWord] = useState("");
+  
+  // console.log(products.id);
 
   const visibleRows = products
-    ?.filter((product) =>
+    ?.filter((product) =>{
       product.name.toLowerCase().includes(searchWord.toLowerCase())
+    }
     )
     ?.sort(function (a, b) {
       if (firstOrlast === "first") {
