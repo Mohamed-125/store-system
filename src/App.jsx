@@ -1,7 +1,6 @@
-import react, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.scss";
 import { Routes, Route, Link } from "react-router-dom";
-import Products from "./Pages/Products";
 import HomePage from "./Pages/HomePage";
 import BuyPage from "./Pages/BuyPage/BuyPage";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
@@ -12,7 +11,6 @@ import { AiFillHome, AiOutlineSearch, AiFillHeart } from "react-icons/ai";
 import { CgProfile } from "react-icons/cg";
 import { BsFillMapFill } from "react-icons/bs";
 import { GiHamburgerMenu } from "react-icons/gi";
-import ChartBox from "./components/chartBox/ChartBox";
 import Home from "./Pages/Home/Home";
 import Profile from "./Pages/profile/Profile";
 function App() {
