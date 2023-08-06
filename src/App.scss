@@ -75,6 +75,7 @@ input {
 
 .main-div {
   display: flex;
+  flex-direction: row-reverse;
 }
 
 .main-div > div {
@@ -125,6 +126,7 @@ input {
   background-color: white;
   border-radius: 5px;
 }
+
 .sidebar-div > div:first-child {
   width: 100%;
 }

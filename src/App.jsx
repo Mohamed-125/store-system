@@ -8,13 +8,13 @@ import { db } from "./firebase";
 import Invoices from "./Pages/invoices/Invoices";
 import Invoice from "./Pages/Invoice";
 
-import { AiFillHome} from "react-icons/ai";
-import { MdProductionQuantityLimits} from "react-icons/md";
+import { AiFillHome } from "react-icons/ai";
+import { MdProductionQuantityLimits } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { FcSalesPerformance } from "react-icons/fc";
 import { FaFileInvoiceDollar } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
-import {FaProductHunt} from "react-icons/fa"
+import { FaProductHunt } from "react-icons/fa";
 import Home from "./Pages/Home/Home";
 import Profile from "./Pages/profile/Profile";
 import NoQuantityProduct from "./Pages/noQuantityProduct/NoQuantityProduct";
@@ -33,42 +33,46 @@ function App() {
       setProducts(products);
     });
   };
+
   //get no quantity Products
-  // const getNoQuantityProducts=async () => {
-  //   await  getDocs(collection(db,"noQuantityProducts")).then ((noQuantityProducts)=>{
-  //     const noQuantity =noQuantityProducts.docs.map((doc)=>({
-  //       ...doc.data(),
-  //       id:doc.id,
-  //     }))
-  //     setNoQuantityProducts(noQuantity);
-  //   })
-  //   }
+
+  const getNoQuantityProducts = async () => {
+    await getDocs(collection(db, "noQuantityProducts")).then(
+      (noQuantityProduct) => {
+        const noQuantity = noQuantityProduct.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }));
+        setNoQuantityProducts(noQuantity);
+      }
+    );
+  };
+
   useEffect(() => {
-    // console.log(`noQuantityProducts : ${noQuantityProducts}`);
     console.log(`noQuantityProducts : ${noQuantityProducts}`);
   }, [noQuantityProducts]);
 
   useEffect(() => {
     getProducts();
-    // getNoQuantityProducts()
+    getNoQuantityProducts();
   }, []);
 
   return (
-
     <div className="main-div">
       <div
-        className={`sidebar-div ${sidebarOpen ? "sidebar-open" : "sidebar-close"
-          }`}
+        className={`sidebar-div ${
+          sidebarOpen ? "sidebar-open" : "sidebar-close"
+        }`}
       >
         <div>
           <Link to="/ ">
             <AiFillHome /> <p>الرئيسيه</p>
           </Link>
           <Link to="/products ">
-            <FaProductHunt/> <p>المنتجات</p>
+            <FaProductHunt /> <p>المنتجات</p>
           </Link>
           <Link to="/invoices">
-            < FcSalesPerformance/> <p>فاتوره</p>
+            <FcSalesPerformance /> <p>فاتوره</p>
           </Link>
           <Link to="/buy-products ">
             <FaFileInvoiceDollar /> <p>بيع المنتجات</p>
@@ -90,21 +94,20 @@ function App() {
         </div>
       </div>
       <Routes>
-        <Route
-          path="/"
-          element={<Home />}
-        />
+        <Route path="/" element={<Home />} />
         <Route path="/invoices" element={<Invoices />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/invoices/:id" element={<Invoice />} />
         <Route
-          path="/invoices/:id"
-          element={<Invoice />}
+          path="/products"
+          element={
+            <HomePage
+              getProducts={getProducts}
+              products={products}
+              setProducts={setProducts}
+            />
+          }
         />
-        <Route path="/products" element={<HomePage
-          getProducts={getProducts}
-          products={products}
-          setProducts={setProducts}
-        />} />
         <Route
           path="/buy-products"
           element={
@@ -120,26 +123,13 @@ function App() {
           path="/noQuantity-product"
           element={
             <NoQuantityProduct
-            // getNoQuantityProducts={getNoQuantityProducts}
-            // noQuantityProducts={noQuantityProducts}
-            // setNoQuantityProducts={setNoQuantityProducts}
-             />
+              noQuantityProducts={noQuantityProducts}
+              setNoQuantityProducts={setNoQuantityProducts}
+            />
           }
         />
       </Routes>
     </div>
-
-
-
-
-
-
-
-
-
-
-
-
 
     // <div>
     //   <Routes>

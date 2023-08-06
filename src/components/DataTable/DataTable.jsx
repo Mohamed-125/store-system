@@ -19,6 +19,7 @@ export default function DataTable({
   deleteProductHandler,
   setJob,
   setProducts,
+  noQuntity = false,
   setId,
   tableHeads,
   setFieldValue,
@@ -31,25 +32,26 @@ export default function DataTable({
   const [startIndex, setStartIndex] = useState(1);
   const [firstOrlast, setFirstOrLast] = useState("first");
   const [searchWord, setSearchWord] = useState("");
-  
+  console.log(products);
   // console.log(products.id);
-
-  const visibleRows = products
-    ?.filter((product) =>{
-      product.name.toLowerCase().includes(searchWord.toLowerCase())
-    }
-    )
-    ?.sort(function (a, b) {
-      if (firstOrlast === "first") {
-        return a.name.localeCompare(b.name, ["ar"]);
-      } else {
-        return b.name.localeCompare(a.name, ["ar"]);
-      }
-    })
-    ?.slice(startIndex - 1, rowsPerPage * page);
+  const visibleRows = invoices
+    ? products
+    : products
+        ?.filter((product) => {
+          // !product.name.toLowerCase().includes(searchWord.toLowerCase());
+          return product.name.toLowerCase().includes(searchWord.toLowerCase());
+        })
+        ?.sort(function (a, b) {
+          if (firstOrlast === "first") {
+            return a.name.localeCompare(b.name, ["ar"]);
+          } else {
+            return b.name.localeCompare(a.name, ["ar"]);
+          }
+        })
+        ?.slice(startIndex - 1, rowsPerPage * page);
 
   return (
-    <>
+    <div>
       <div className="container !p-0 flex flex-row-reverse justify-between items-center mt-[20px]">
         <Typography
           sx={{ flex: "1 1 100%" }}
@@ -61,7 +63,7 @@ export default function DataTable({
           {!print ? "المنتجات" : "الفاتوره"}{" "}
         </Typography>
 
-        {print || invoice || invoices ? null : (
+        {print || invoice || invoices || noQuntity ? null : (
           <button
             className="btn max-w-[120px]"
             onClick={() => {
@@ -186,10 +188,9 @@ export default function DataTable({
             )}
           </tbody>
         </table>
-        {!print &&
-        products?.filter((product) =>
-          product.name.toLowerCase().includes(searchWord.toLowerCase())
-        ).length > 5 ? (
+        {print || invoices ? null : products?.filter((product) =>
+            product.name.toLowerCase().includes(searchWord.toLowerCase())
+          ).length > 5 ? (
           <TablePagination
             rowsPerPage={rowsPerPage}
             page={page}
@@ -199,16 +200,8 @@ export default function DataTable({
             searchWord={searchWord}
           />
         ) : null}
+        {console.log(products)}
       </div>
-      {invoice && (
-        <p className="container text-2xl text-end font-bold px-0">
-          اجمالي سعر الفاتوره :{" "}
-          {products.reduce((prev, curr) => {
-            return prev + curr.price * Number(curr.selectedQuantity);
-          }, 0)}{" "}
-          ج.م
-        </p>
-      )}
-    </>
+    </div>
   );
 }

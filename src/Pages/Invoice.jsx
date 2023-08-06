@@ -11,12 +11,11 @@ const Invoice = () => {
     const getInvoiceProducts = async () => {
       const docRef = await getDoc(doc(db, "invoices", id));
       setProducts(docRef.data()["invoice-products"]);
-      console.log(docRef.data()["invoice-products"]);
     };
     getInvoiceProducts();
   }, []);
   return (
-    <>
+    <div>
       <DataTable
         products={products}
         invoice={true}
@@ -27,7 +26,14 @@ const Invoice = () => {
           "اجمالي سعر المنتج",
         ]}
       />
-    </>
+      <p className="container text-2xl text-end font-bold px-0">
+        اجمالي سعر الفاتوره :{" "}
+        {products?.reduce((prev, curr) => {
+          return prev + curr.price * Number(curr.selectedQuantity);
+        }, 0)}{" "}
+        ج.م
+      </p>{" "}
+    </div>
   );
 };
 

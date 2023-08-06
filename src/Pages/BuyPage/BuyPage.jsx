@@ -80,7 +80,6 @@ const BuyPage = ({
         });
         addNoQuantityProductsToFirebase(pro);
         deleteProductHandler(pro.id);
-        // setProducts((pre) => pre.filter((product) => pro.id !== product.id));
       }
     });
 
@@ -170,7 +169,7 @@ const BuyPage = ({
           ج.م
         </p>
       </div>
-      <div className="flex justify-center">
+      <div>
         <div className="buypage-search-div">
           <h2 className="text-center text-xl mt-5 font-bold">ابحث عن منتج</h2>
           <input
@@ -182,129 +181,133 @@ const BuyPage = ({
             }}
           />
         </div>
-      </div>
-      <div className="container buypage-main-div">
-        <div className="buypage-products-grid-container">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => {
-              return (
-                <div
-                  key={product.id}
-                  id={product.id}
-                  onClick={() => addToCartHandler(product)}
-                  className="buypage-product-div"
-                >
-                  <img
-                    src={
-                      product?.img
-                        ? product?.img
-                        : "https://t4.ftcdn.net/jpg/00/64/67/27/240_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg"
-                    }
-                  />
-                  <div className="buypage-product-details">
-                    <p> الاسم : {product.name}</p>
-                    <p> السعر : {product.price}</p>
-                    <p> الكميه : {product.quantity}</p>
+        <div className="container buypage-main-div">
+          <div className="buypage-products-grid-container">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => {
+                return (
+                  <div
+                    key={product.id}
+                    id={product.id}
+                    onClick={() => addToCartHandler(product)}
+                    className="buypage-product-div"
+                  >
+                    <img
+                      src={
+                        product?.img
+                          ? product?.img
+                          : "https://t4.ftcdn.net/jpg/00/64/67/27/240_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg"
+                      }
+                    />
+                    <div className="buypage-product-details">
+                      <p> الاسم : {product.name}</p>
+                      <p> السعر : {product.price}</p>
+                      <p> الكميه : {product.quantity}</p>
+                    </div>
                   </div>
-                </div>
-              );
-            })
-          ) : (
-            <p className="text-xl text-gray-400 font-bold">
-              لا يوجد منتج بهذا الأسم
-            </p>
-          )}
-        </div>
-
-        <div className="buypage-products-cart-container">
-          <h1>الفاتوره</h1>
-          {selectedProducts.length > 0 ? (
-            selectedProducts?.map((product) => {
-              const id = product.id;
-              return (
-                <div key={id} id={id} className={`buypage-cart-product ${id}`}>
-                  <img src="https://t4.ftcdn.net/jpg/00/64/67/27/240_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg" />
-                  <div className="buypage-card-product-details">
-                    <p style={{ direction: "rtl", justifyContent: "start" }}>
-                      الاسم : {product.name}{" "}
-                    </p>
-                    <p>{product.price} : سعر المنتج</p>
-                    <p>
-                      {product.price * product.selectedQuantity} : سعر المنتج
-                      الأجمالي
-                    </p>
-                    <p>{product.quantity} : الكميه المتاحه</p>
-                    <p>
-                      <input
-                        type="number"
-                        min={1}
-                        onChange={(e) => {
-                          if (e.target.value > product.quantity) {
-                            alert("الكميه غير متاحه");
-                            return false;
-                          } else {
-                            setSelectedProducts((pre) => {
-                              return pre.map((pro) => {
-                                if (pro.id === product.id) {
-                                  return {
-                                    ...pro,
-                                    selectedQuantity: e.target.value,
-                                  };
-                                } else {
-                                  return pro;
-                                }
-                              });
-                            });
-                          }
-                        }}
-                        value={product.selectedQuantity}
-                        max={product.quantity}
-                      />
-                      : الكميه
-                    </p>
-                    <button
-                      onClick={() => {
-                        setSelectedProducts((pre) =>
-                          pre.filter((pro) => pro.id !== product.id)
-                        );
-                      }}
-                      className="w-[120px] bg-blue-500 text-white px-5 py-1 rounded-md mt-1 "
-                    >
-                      أزاله
-                    </button>
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <p className="text-xl text-gray-400 font-bold">
-              لم يتم اختيار اي منتجات
-            </p>
-          )}
-          {selectedProducts.length > 0 && (
-            <>
-              <p className="mb-5 text-xl ">
-                الأجمالي :
-                {selectedProducts.reduce((prev, curr) => {
-                  return prev + curr.price * Number(curr.selectedQuantity);
-                }, 0)}{" "}
-                ج.م
+                );
+              })
+            ) : (
+              <p className="text-xl text-gray-400 font-bold">
+                لا يوجد منتج بهذا الأسم
               </p>
-              <div className="buypage-products-buttons flex gap-4 sm:flex-direction-column">
-                <button
-                  className="error-btn"
-                  onClick={() => {
-                    setSelectedProducts([]);
-                  }}
-                >
-                  الغاء
-                </button>
-                <button className="btn" onClick={() => payHandler()}>
-                  دفع
-                </button>
-              </div>
-            </>
-          )}
+            )}
+          </div>
+
+          <div className="buypage-products-cart-container">
+            <h1>الفاتوره</h1>
+            {selectedProducts.length > 0 ? (
+              selectedProducts?.map((product) => {
+                const id = product.id;
+                return (
+                  <div
+                    key={id}
+                    id={id}
+                    className={`buypage-cart-product ${id}`}
+                  >
+                    <img src="https://t4.ftcdn.net/jpg/00/64/67/27/240_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg" />
+                    <div className="buypage-card-product-details">
+                      <p style={{ direction: "rtl", justifyContent: "start" }}>
+                        الاسم : {product.name}{" "}
+                      </p>
+                      <p>{product.price} : سعر المنتج</p>
+                      <p>
+                        {product.price * product.selectedQuantity} : سعر المنتج
+                        الأجمالي
+                      </p>
+                      <p>{product.quantity} : الكميه المتاحه</p>
+                      <p>
+                        <input
+                          type="number"
+                          min={1}
+                          onChange={(e) => {
+                            if (e.target.value > product.quantity) {
+                              alert("الكميه غير متاحه");
+                              return false;
+                            } else {
+                              setSelectedProducts((pre) => {
+                                return pre.map((pro) => {
+                                  if (pro.id === product.id) {
+                                    return {
+                                      ...pro,
+                                      selectedQuantity: e.target.value,
+                                    };
+                                  } else {
+                                    return pro;
+                                  }
+                                });
+                              });
+                            }
+                          }}
+                          value={product.selectedQuantity}
+                          max={product.quantity}
+                        />
+                        : الكميه
+                      </p>
+                      <button
+                        onClick={() => {
+                          setSelectedProducts((pre) =>
+                            pre.filter((pro) => pro.id !== product.id)
+                          );
+                        }}
+                        className="w-[120px] bg-blue-500 text-white px-5 py-1 rounded-md mt-1 "
+                      >
+                        أزاله
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-xl text-gray-400 font-bold">
+                لم يتم اختيار اي منتجات
+              </p>
+            )}
+            {selectedProducts.length > 0 && (
+              <>
+                <p className="mb-5 text-xl ">
+                  الأجمالي :
+                  {selectedProducts.reduce((prev, curr) => {
+                    return prev + curr.price * Number(curr.selectedQuantity);
+                  }, 0)}{" "}
+                  ج.م
+                </p>
+                <div className="buypage-products-buttons flex gap-4 sm:flex-direction-column">
+                  <button
+                    className="error-btn"
+                    onClick={() => {
+                      setSelectedProducts([]);
+                    }}
+                  >
+                    الغاء
+                  </button>
+                  <button className="btn" onClick={() => payHandler()}>
+                    دفع
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </>
