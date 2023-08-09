@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./dataTable.scss";
 import Typography from "@mui/material/Typography";
 import TablePagination from "./TablePagination";
@@ -34,13 +34,14 @@ export default function DataTable({
   const [searchWord, setSearchWord] = useState("");
   // console.log(products);
   // console.log(products.id);
+
   const visibleRows = invoices
     ? products
-    : products
+      : products
         ?.filter((product) => {
-          // !product.name.toLowerCase().includes(searchWord.toLowerCase());
-          return product.name.toLowerCase().includes(searchWord.toLowerCase());
-        })
+          return product.name.toLowerCase().includes(searchWord.toLowerCase())
+        }
+        )
         ?.sort(function (a, b) {
           if (firstOrlast === "first") {
             return a.name.localeCompare(b.name, ["ar"]);
@@ -124,61 +125,61 @@ export default function DataTable({
           <tbody>
             {products?.length > 0
               ? visibleRows.map((product) => {
-                  return invoices ? (
-                    <Link to={`${product.id}`} key={product.id}>
-                      <tr className="cursor-pointer hover:opacity-90 hover:bg-slate-100">
-                        <td>{product["invoice-number"]}</td>
-                        <td
-                          style={{ direction: "rtl", justifyContent: "start" }}
-                        >
-                          {product["invoice-date"]}
-                        </td>
-                        <td>{product["invoice-price"]} ج.م</td>
-                      </tr>
-                    </Link>
-                  ) : (
-                    <tr key={product.id}>
-                      <td>{product.name}</td>
-                      <td className="flex-row-reverse gap-1">
-                        {product.price} <p>ج.م </p>
+                return invoices ? (
+                  <Link to={`${product.id}`} key={product.id}>
+                    <tr className="cursor-pointer hover:opacity-90 hover:bg-slate-100">
+                      <td>{product["invoice-number"]}</td>
+                      <td
+                        style={{ direction: "rtl", justifyContent: "start" }}
+                      >
+                        {product["invoice-date"]}
                       </td>
-                      {print || invoice ? (
-                        <td>{product.selectedQuantity}</td>
-                      ) : null}
-                      {invoice ? null : <td>{product.quantity}</td>}
-                      {invoice ? (
-                        <td className="flex-row-reverse gap-1">
-                          {product.price * product.selectedQuantity} <p>ج.م </p>
-                        </td>
-                      ) : null}
-
-                      {print || invoice ? null : (
-                        <td>
-                          <button
-                            onClick={() => {
-                              setJob("تعديل");
-                              setModal(true);
-                              setFieldValue("name", product.name);
-                              setFieldValue("price", product.price);
-                              setFieldValue("quantity", product.quantity);
-                              setId(product.id);
-                            }}
-                            title="تعديل المنتج"
-                          >
-                            <AiFillEdit />
-                          </button>
-
-                          <button
-                            title="حذف المنتج"
-                            onClick={() => deleteProductHandler(product.id)}
-                          >
-                            <AiFillDelete />
-                          </button>
-                        </td>
-                      )}
+                      <td>{product["invoice-price"]} ج.م</td>
                     </tr>
-                  );
-                })
+                  </Link>
+                ) : (
+                  <tr key={product.id}>
+                    <td>{product.name}</td>
+                    <td className="flex-row-reverse gap-1">
+                      {product.price} <p>ج.م </p>
+                    </td>
+                    {print || invoice ? (
+                      <td>{product.selectedQuantity}</td>
+                    ) : null}
+                    {invoice ? null : <td>{product.quantity}</td>}
+                    {invoice ? (
+                      <td className="flex-row-reverse gap-1">
+                        {product.price * product.selectedQuantity} <p>ج.م </p>
+                      </td>
+                    ) : null}
+
+                    {print || invoice ? null : (
+                      <td>
+                        <button
+                          onClick={() => {
+                            setJob("تعديل");
+                            setModal(true);
+                            setFieldValue("name", product.name);
+                            setFieldValue("price", product.price);
+                            setFieldValue("quantity", product.quantity);
+                            setId(product.id);
+                          }}
+                          title="تعديل المنتج"
+                        >
+                          <AiFillEdit />
+                        </button>
+
+                        <button
+                          title="حذف المنتج"
+                          onClick={() => deleteProductHandler(product.id)}
+                        >
+                          <AiFillDelete />
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })
               : "لا يوجد اي منتجات"}
 
             {products?.length === 0 && (
@@ -189,8 +190,8 @@ export default function DataTable({
           </tbody>
         </table>
         {print || invoices ? null : products?.filter((product) =>
-            product.name.toLowerCase().includes(searchWord.toLowerCase())
-          ).length > 5 ? (
+          product.name.toLowerCase().includes(searchWord.toLowerCase())
+        ).length > 5 ? (
           <TablePagination
             rowsPerPage={rowsPerPage}
             page={page}
