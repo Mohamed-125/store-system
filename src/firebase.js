@@ -6,13 +6,15 @@ import { getFirestore } from "@firebase/firestore";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
+console.log(import.meta.env.VITE_REACT_APP_ID) // 123
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDbp7tTRQegA5rpaDIO5Op_v7gJdjMEjKY",
-  authDomain: "m7al-gomlah.firebaseapp.com",
-  projectId: "m7al-gomlah",
-  storageBucket: "m7al-gomlah.appspot.com",
-  messagingSenderId: "691675781695",
-  appId: "1:691675781695:web:22957c2a473f37fc0f768a",
+  apiKey: import.meta.env.VITE_REACT_API_KEY,
+  authDomain: import.meta.env.VITE_REACT_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_REACT_PROJECT_ID ,
+  storageBucket: import.meta.env.REACT_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_REACT_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_REACT_APP_ID,
 };
 
 // Initialize Firebase

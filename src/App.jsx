@@ -3,11 +3,10 @@ import "./App.scss";
 import { Routes, Route, Link } from "react-router-dom";
 import HomePage from "./Pages/HomePage";
 import BuyPage from "./Pages/BuyPage/BuyPage";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import Invoices from "./Pages/invoices/Invoices";
 import Invoice from "./Pages/Invoice";
-
 import { AiFillHome } from "react-icons/ai";
 import { MdProductionQuantityLimits } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
@@ -18,9 +17,9 @@ import { FaProductHunt } from "react-icons/fa";
 import Home from "./Pages/Home/Home";
 import Profile from "./Pages/profile/Profile";
 import NoQuantityProduct from "./Pages/noQuantityProduct/NoQuantityProduct";
+
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const [products, setProducts] = useState([]);
   const [noQuantityProducts, setNoQuantityProducts] = useState([]);
 
@@ -49,7 +48,7 @@ function App() {
   };
 
   useEffect(() => {
-    console.log(`noQuantityProducts : ${noQuantityProducts}`);
+    // console.log(`noQuantityProducts : ${noQuantityProducts}`);
   }, [noQuantityProducts]);
 
   useEffect(() => {
@@ -60,9 +59,9 @@ function App() {
   return (
     <div className="main-div">
       <div
-        className={`sidebar-div ${
-          sidebarOpen ? "sidebar-open" : "sidebar-close"
-        }`}
+        className={`sidebar-div fixed ${sidebarOpen ? "sidebar-open" : "sidebar-close"
+          }`}
+        // style={{ position: "fixed" }}
       >
         <div>
           <Link to="/ ">
@@ -130,38 +129,6 @@ function App() {
         />
       </Routes>
     </div>
-
-    // <div>
-    //   <Routes>
-    //     <Route
-    //       path="/"
-    //       element={
-    //         <>
-    //         <HomePage
-    //           getProducts={getProducts}
-    //           products={products}
-    //           setProducts={setProducts}
-    //           />
-    //           <Home/>
-    //           </>
-    //       }
-    //     />
-    //     <Route path="/invoices" element={<Invoices />} />
-    //     <Route path="/invoices/:id" element={<Invoice />} />
-    //     <Route path="/products" element={<Products />} />
-    //     <Route
-    //       path="/buy-products"
-    //       element={
-    //         <BuyPage
-    //           setProducts={setProducts}
-    //           setNoQuantityProducts={setNoQuantityProducts}
-    //           products={products}
-    //           getProducts={getProducts}
-    //         />
-    //       }
-    //     />
-    //   </Routes>
-    // </div>
   );
 }
 

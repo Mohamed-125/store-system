@@ -32,7 +32,7 @@ export default function DataTable({
   const [startIndex, setStartIndex] = useState(1);
   const [firstOrlast, setFirstOrLast] = useState("first");
   const [searchWord, setSearchWord] = useState("");
-  console.log(products);
+  // console.log(products);
   // console.log(products.id);
   const visibleRows = invoices
     ? products
@@ -200,7 +200,7 @@ export default function DataTable({
             searchWord={searchWord}
           />
         ) : null}
-        {console.log(products)}
+        {/* {console.log(products)} */}
       </div>
     </div>
   );
