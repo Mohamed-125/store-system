@@ -1,0 +1,12 @@
+.dashboard {
+  padding-block: 0px !important;
+  padding-left: 20px;
+  max-width: 1200px;
+}
+
+.dashboard-top-section {
+  display: flex;
+  padding-top: clamp(15px, 70vw, 35px);
+  flex-wrap: wrap;
+  gap: 20px;
+}

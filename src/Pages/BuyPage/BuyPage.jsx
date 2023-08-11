@@ -2,7 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import "./BuyPage.scss";
 import DataTable from "../../components/DataTable/DataTable";
 import { NotificationManager } from "react-notifications";
-import { addDoc, collection, deleteDoc, doc } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../../firebase";
 
 const BuyPage = ({
@@ -103,8 +109,7 @@ const BuyPage = ({
       alert("يجب ادخل كميه");
     } else {
       const invoiceId = Math.round(Math.random() * 100000000000 + 1);
-      window.print();
-
+      // window.print();
       try {
         const docRef = await addDoc(collection(db, "invoices"), {
           "invoice-number": invoiceId,
@@ -113,8 +118,9 @@ const BuyPage = ({
             return prev + curr.price * Number(curr.selectedQuantity);
           }, 0),
           "invoice-products": selectedProducts,
+          date: new Date().toISOString().slice(0, 10),
         });
-
+        console.log(new Date(Date.now()).toISOString());
         setProducts((pre) => {
           return pre.map((product) => {
             if (
@@ -130,6 +136,16 @@ const BuyPage = ({
             } else {
               return product;
             }
+          });
+        });
+
+        selectedProducts.map((product) => {
+          const updateRef = updateDoc(doc(db, "products", product.id), {
+            name: product.name,
+            id: product.id,
+            price: product.price,
+            quantity: product.quantity - product.selectedQuantity,
+            selectedQuantity: product.quantity,
           });
         });
 

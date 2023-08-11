@@ -6,7 +6,7 @@ const TablePagination = ({
   products,
   searchWord,
 }) => {
-  console.log(products);
+  // console.log(products);
   return (
     <div>
       <div className="flex justify-center flex-row-reverse gap-4 items-center my-[20px]">

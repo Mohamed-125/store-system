@@ -18,12 +18,13 @@ export default function DataTable({
   setModal,
   deleteProductHandler,
   setJob,
-  setProducts,
   noQuntity = false,
   setId,
   tableHeads,
   setFieldValue,
   print = false,
+  searchDate,
+  setSearchDate,
 }) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("price");
@@ -32,37 +33,58 @@ export default function DataTable({
   const [startIndex, setStartIndex] = useState(1);
   const [firstOrlast, setFirstOrLast] = useState("first");
   const [searchWord, setSearchWord] = useState("");
-  console.log(products);
-  // console.log(products.id);
-  const visibleRows = invoices
-    ? products
-    : products
-        ?.filter((product) => {
-          // !product.name.toLowerCase().includes(searchWord.toLowerCase());
-          return product.name.toLowerCase().includes(searchWord.toLowerCase());
-        })
-        ?.sort(function (a, b) {
-          if (firstOrlast === "first") {
-            return a.name.localeCompare(b.name, ["ar"]);
-          } else {
-            return b.name.localeCompare(a.name, ["ar"]);
-          }
-        })
-        ?.slice(startIndex - 1, rowsPerPage * page);
+
+  let visibleRows;
+
+  console.log();
+
+  let filteredProducts = products
+    .filter((product) => {
+      if (product.name) {
+        return product.name.toLowerCase().includes(searchWord.toLowerCase());
+      } else if (product["invoice-number"]) {
+        if (
+          String(product["invoice-number"])
+            .toLowerCase()
+            .includes(searchWord.toLowerCase())
+        ) {
+          return product;
+        }
+      }
+    })
+    .filter((product) => {
+      if (product?.date && searchDate) {
+        console.log(product?.date);
+        if (new Date(product?.date)?.getTime() === searchDate) {
+          return product;
+        }
+      } else {
+        return product;
+      }
+    });
+
+  visibleRows = filteredProducts?.sort(function (a, b) {
+    if (firstOrlast === "first") {
+      return a?.name?.localeCompare(b.name, ["ar"]);
+    } else {
+      return b?.name?.localeCompare(a.name, ["ar"]);
+    }
+  });
+
+  visibleRows = visibleRows?.slice(startIndex - 1, rowsPerPage * page);
 
   return (
-    <div>
+    <div className="pl-[20px] table-table">
       <div className="container !p-0 flex flex-row-reverse justify-between items-center mt-[20px]">
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          variant="h4"
-          id="tableTitle"
-          component="div"
-          className="text-end"
-        >
-          {!print ? "المنتجات" : "الفاتوره"}{" "}
-        </Typography>
-
+        <h3 className="text-3xl">
+          {print
+            ? "الفاتوره"
+            : invoice
+            ? "منتجات الفاتوره"
+            : invoices
+            ? "الفواتير"
+            : "المنتجات"}
+        </h3>
         {print || invoice || invoices || noQuntity ? null : (
           <button
             className="btn max-w-[120px]"
@@ -75,16 +97,52 @@ export default function DataTable({
           </button>
         )}
       </div>
-      <div className="container flex flex-col gap-3 mt-5 items-end !p-0">
-        <h2 className="text-end text-xl mt-5 font-bold">ابحث عن منتج</h2>
-        <input
-          type="text"
-          style={{ direction: "rtl" }}
-          className="mt-2 mb-5 p-2 text-right px-5 w-full max-w-md min-w-[280px] "
-          onChange={(e) => {
-            setSearchWord(e.target.value);
-          }}
-        />
+      <div className="container flex items-center gap-3 mt-5 justify-between flex-row-reverse !p-0">
+        <div className="flex gap-3 items-center flex-1 flex-row-reverse  justify-start ">
+          <h2 className="text-end text-xl font-bold">ابحث عن منتج</h2>
+          {invoices ? (
+            <>
+              <input
+                type="number"
+                className="p-[3px] text-right px-5 w-full max-w-[240px] "
+                placeholder="اكتب رقم الفاتوره للبحث"
+                onChange={(e) => {
+                  setSearchWord(e.target.value);
+                }}
+              />
+              <input
+                type="date"
+                className="p-[3px] text-right px-5 w-full max-w-[240px] "
+                value={
+                  searchDate
+                    ? new Date(searchDate).toISOString().slice(0, 10)
+                    : ""
+                }
+                onChange={(e) => {
+                  setSearchDate(
+                    new Date(e.target.value).getTime()
+                      ? new Date(e.target.value).getTime()
+                      : ""
+                  );
+                }}
+              />
+            </>
+          ) : (
+            <input
+              type="text"
+              style={{ direction: "rtl" }}
+              className="p-[3px] text-right px-5 w-full max-w-[240px] "
+              placeholder="اكتب اسم المنتج للبحث"
+              onChange={(e) => {
+                setSearchWord(e.target.value);
+              }}
+            />
+          )}
+        </div>
+
+        <h2 className="text-xl font-bold text-right">
+          {filteredProducts.length} : عدد المنتجات{" "}
+        </h2>
       </div>
       <div className="table-container container">
         <table>
@@ -122,64 +180,78 @@ export default function DataTable({
             </tr>
           </thead>
           <tbody>
-            {products?.length > 0
-              ? visibleRows.map((product) => {
-                  return invoices ? (
-                    <Link to={`${product.id}`} key={product.id}>
-                      <tr className="cursor-pointer hover:opacity-90 hover:bg-slate-100">
+            {filteredProducts?.length > 0 ? (
+              visibleRows.map((product) => {
+                return invoices ? (
+                  <tr
+                    key={product.id}
+                    className="cursor-pointer flex hover:opacity-90 hover:bg-slate-100"
+                  >
+                    <div className="flex flex-1">
+                      <Link className="flex flex-1" to={`${product.id}`}>
                         <td>{product["invoice-number"]}</td>
                         <td
-                          style={{ direction: "rtl", justifyContent: "start" }}
+                          style={{
+                            direction: "rtl",
+                            justifyContent: "start",
+                          }}
                         >
                           {product["invoice-date"]}
                         </td>
                         <td>{product["invoice-price"]} ج.م</td>
-                      </tr>
-                    </Link>
-                  ) : (
-                    <tr key={product.id}>
-                      <td>{product.name}</td>
+                      </Link>
+                    </div>
+                  </tr>
+                ) : (
+                  <tr key={product.id}>
+                    <td>{product.name}</td>
+                    <td className="flex-row-reverse gap-1">
+                      {product.price} <p>ج.م </p>
+                    </td>
+                    {print || invoice ? (
+                      <td>{product.selectedQuantity}</td>
+                    ) : null}
+                    {invoice ? null : <td>{product.quantity}</td>}
+                    {invoice ? (
                       <td className="flex-row-reverse gap-1">
-                        {product.price} <p>ج.م </p>
+                        {product.price * product.selectedQuantity} <p>ج.م </p>
                       </td>
-                      {print || invoice ? (
-                        <td>{product.selectedQuantity}</td>
-                      ) : null}
-                      {invoice ? null : <td>{product.quantity}</td>}
-                      {invoice ? (
-                        <td className="flex-row-reverse gap-1">
-                          {product.price * product.selectedQuantity} <p>ج.م </p>
-                        </td>
-                      ) : null}
+                    ) : null}
 
-                      {print || invoice ? null : (
-                        <td>
-                          <button
-                            onClick={() => {
-                              setJob("تعديل");
-                              setModal(true);
-                              setFieldValue("name", product.name);
-                              setFieldValue("price", product.price);
-                              setFieldValue("quantity", product.quantity);
-                              setId(product.id);
-                            }}
-                            title="تعديل المنتج"
-                          >
-                            <AiFillEdit />
-                          </button>
+                    {print || invoice ? null : (
+                      <td>
+                        <button
+                          onClick={() => {
+                            setJob("تعديل");
+                            setModal(true);
+                            setFieldValue("name", product.name);
+                            setFieldValue("price", product.price);
+                            setFieldValue("quantity", product.quantity);
+                            setId(product.id);
+                          }}
+                          title="تعديل المنتج"
+                        >
+                          <AiFillEdit />
+                        </button>
 
-                          <button
-                            title="حذف المنتج"
-                            onClick={() => deleteProductHandler(product.id)}
-                          >
-                            <AiFillDelete />
-                          </button>
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })
-              : "لا يوجد اي منتجات"}
+                        <button
+                          title="حذف المنتج"
+                          onClick={() => deleteProductHandler(product.id)}
+                        >
+                          <AiFillDelete />
+                        </button>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })
+            ) : (
+              <h3 className="py-9 font-bold text-xl text-center">
+                {invoices
+                  ? "لا يوجد اي منتجات حاول تغير التاريخ او كلمه البحث او اضافه منتجات"
+                  : "لا يوجد اي منتجات"}
+              </h3>
+            )}
 
             {products?.length === 0 && (
               <tr className="text-3xl text-gray-400 text-center !justify-center  font-bold py-10">
@@ -188,9 +260,8 @@ export default function DataTable({
             )}
           </tbody>
         </table>
-        {print || invoices ? null : products?.filter((product) =>
-            product.name.toLowerCase().includes(searchWord.toLowerCase())
-          ).length > 5 ? (
+
+        {print ? null : filteredProducts.length > 5 ? (
           <TablePagination
             rowsPerPage={rowsPerPage}
             page={page}
@@ -200,7 +271,6 @@ export default function DataTable({
             searchWord={searchWord}
           />
         ) : null}
-        {console.log(products)}
       </div>
     </div>
   );

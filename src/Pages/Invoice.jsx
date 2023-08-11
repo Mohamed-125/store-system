@@ -6,14 +6,17 @@ import { doc, getDoc } from "firebase/firestore";
 
 const Invoice = () => {
   const { id } = useParams();
-  const [products, setProducts] = useState();
+  const [products, setProducts] = useState([]);
+
   useEffect(() => {
     const getInvoiceProducts = async () => {
       const docRef = await getDoc(doc(db, "invoices", id));
       setProducts(docRef.data()["invoice-products"]);
+      // console.log(docRef.data()["invoice-products"]);
     };
     getInvoiceProducts();
   }, []);
+
   return (
     <div>
       <DataTable

@@ -3,7 +3,7 @@ import DataTable from "../../components/DataTable/DataTable";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 
-const Invoices = () => {
+const Invoices = ({ setSearchDate, searchDate }) => {
   const [invoices, setInvoices] = useState([]);
   const getInvoices = async () => {
     await getDocs(collection(db, "invoices")).then((invoice) => {
@@ -23,6 +23,8 @@ const Invoices = () => {
     <div>
       <DataTable
         products={invoices}
+        setSearchDate={setSearchDate}
+        searchDate={searchDate}
         invoices={true}
         tableHeads={["رقم الفاتوره", "تاريخ الفاتوره", "سعر الفاتوره"]}
       />

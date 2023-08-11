@@ -3,6 +3,20 @@ $whiteColor: #d3d2d2;
 button:disabled {
   opacity: 0.5;
 }
+
+.table-div input {
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  .table-div input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
 .table-container {
   border: 1px solid $whiteColor;
   border-radius: 5px;

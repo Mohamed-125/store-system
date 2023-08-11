@@ -1,0 +1,26 @@
+.dashboard-box {
+  padding: 20px;
+  flex: 1;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: white;
+  text-align: center;
+  box-shadow: -1px 2px 7px #00000040;
+  gap: 10px;
+  h4 {
+    font-size: 22px;
+    font-weight: bold;
+    gap: 7px;
+  }
+  p {
+    font-size: 15px;
+  }
+  svg {
+    font-size: 30px;
+  }
+}
