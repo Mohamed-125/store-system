@@ -1,8 +1,10 @@
-
+// import Signup from "../../components/signup/Signup"
 
 const Profile = () => {
   return (
-    <div>Profile</div>
+    <> profile
+    {/* <Signup/> */}
+     </>
   )
 }
 

@@ -77,7 +77,7 @@ const BuyPage = ({
         quantity,
         proudctId: id,
       });
-      console.log(docRef);
+      // console.log(docRef);
     };
     products.map((pro) => {
       if (pro.quantity === 0) {
@@ -89,7 +89,7 @@ const BuyPage = ({
       }
     });
 
-    console.log("products", products);
+    // console.log("products", products);
   }, [products]);
 
   let id;

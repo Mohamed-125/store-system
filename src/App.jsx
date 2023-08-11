@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./App.scss";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 import HomePage from "./Pages/HomePage";
 import BuyPage from "./Pages/BuyPage/BuyPage";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "./firebase";
 import Invoices from "./Pages/invoices/Invoices";
 import Invoice from "./Pages/Invoice";
-
+///////////////////////////////////////// icons////////////////////////////////
 import { AiFillHome } from "react-icons/ai";
 import { MdProductionQuantityLimits } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
@@ -18,9 +18,10 @@ import { FaProductHunt } from "react-icons/fa";
 import Home from "./Pages/Home/Home";
 import Profile from "./Pages/profile/Profile";
 import NoQuantityProduct from "./Pages/noQuantityProduct/NoQuantityProduct";
+import Login from "./components/login/Login";
+import { AuthContext } from "./components/context/AuthContext";
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const [products, setProducts] = useState([]);
   const [noQuantityProducts, setNoQuantityProducts] = useState([]);
   const [searchDate, setSearchDate] = useState("");
@@ -34,7 +35,15 @@ function App() {
       setProducts(products);
     });
   };
+  const currentUser = useContext(AuthContext);
+  console.log(currentUser);
+  const RequireAuth = ({ children }) => {
+    return currentUser ? (children) : <Navigate to="/login" />
+  }
 
+  useEffect(()=>{
+
+  },[])
   //get no quantity Products
 
   const getNoQuantityProducts = async () => {
@@ -50,6 +59,13 @@ function App() {
   };
 
   useEffect(() => {
+<<<<<<< HEAD
+=======
+    // console.log(`noQuantityProducts : ${noQuantityProducts}`);
+  }, [noQuantityProducts ,currentUser]);
+
+  useEffect(() => {
+>>>>>>> 3b26041824add50e36cd5751d0eef7179338365e
     getProducts();
     getNoQuantityProducts();
   }, []);
@@ -57,9 +73,9 @@ function App() {
   return (
     <div className="main-div container">
       <div
-        className={`sidebar-div ${
-          sidebarOpen ? "sidebar-open" : "sidebar-close"
-        }`}
+        className={`sidebar-div ${sidebarOpen ? "sidebar-open" : "sidebar-close"
+          }`}
+      // style={{ position: "fixed" }}
       >
         <div>
           <Link to="/ ">
@@ -91,6 +107,7 @@ function App() {
         </div>
       </div>
       <Routes>
+<<<<<<< HEAD
         <Route
           path="/"
           element={
@@ -105,36 +122,73 @@ function App() {
         />
         <Route path="/profile" element={<Profile />} />
         <Route path="/invoices/:id" element={<Invoice />} />
+=======
+>>>>>>> 3b26041824add50e36cd5751d0eef7179338365e
         <Route
-          path="/products"
+          path="/"
           element={
+            <RequireAuth>
+              <Home />
+            </RequireAuth>
+          }
+        />
+        <Route path="/invoices" element={
+          <RequireAuth>
+            <Invoices />
+          </RequireAuth>
+
+        } />
+        <Route path="/profile" element={
+          <RequireAuth>
+            <Profile />
+          </RequireAuth>
+        } />
+        <Route
+          path="/invoices/:id"
+          element={
+            <RequireAuth>
+              <Invoice />
+            </RequireAuth>
+          }
+        />
+        <Route path="/products" element={
+          <RequireAuth>
+
             <HomePage
               getProducts={getProducts}
               products={products}
               setProducts={setProducts}
             />
-          }
+          </RequireAuth>
+        }
         />
         <Route
           path="/buy-products"
           element={
-            <BuyPage
-              setProducts={setProducts}
-              setNoQuantityProducts={setNoQuantityProducts}
-              products={products}
-              getProducts={getProducts}
-            />
+            <RequireAuth>
+              <BuyPage
+                setProducts={setProducts}
+                setNoQuantityProducts={setNoQuantityProducts}
+                products={products}
+                getProducts={getProducts}
+              />
+            </RequireAuth>
           }
         />
         <Route
           path="/noQuantity-product"
           element={
-            <NoQuantityProduct
-              noQuantityProducts={noQuantityProducts}
-              setNoQuantityProducts={setNoQuantityProducts}
-            />
+            <RequireAuth>
+              <NoQuantityProduct
+                noQuantityProducts={noQuantityProducts}
+                setNoQuantityProducts={setNoQuantityProducts}
+              />
+            </RequireAuth>
           }
         />
+        <Route
+          path="/login"
+          element={<Login />} />
       </Routes>
     </div>
   );
