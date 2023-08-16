@@ -38,12 +38,10 @@ function App() {
   const currentUser = useContext(AuthContext);
   console.log(currentUser);
   const RequireAuth = ({ children }) => {
-    return currentUser ? (children) : <Navigate to="/login" />
-  }
+    return currentUser ? children : <Navigate to="/login" />;
+  };
 
-  useEffect(()=>{
-
-  },[])
+  useEffect(() => {}, []);
   //get no quantity Products
 
   const getNoQuantityProducts = async () => {
@@ -59,13 +57,6 @@ function App() {
   };
 
   useEffect(() => {
-<<<<<<< HEAD
-=======
-    // console.log(`noQuantityProducts : ${noQuantityProducts}`);
-  }, [noQuantityProducts ,currentUser]);
-
-  useEffect(() => {
->>>>>>> 3b26041824add50e36cd5751d0eef7179338365e
     getProducts();
     getNoQuantityProducts();
   }, []);
@@ -73,9 +64,10 @@ function App() {
   return (
     <div className="main-div container">
       <div
-        className={`sidebar-div ${sidebarOpen ? "sidebar-open" : "sidebar-close"
-          }`}
-      // style={{ position: "fixed" }}
+        className={`sidebar-div ${
+          sidebarOpen ? "sidebar-open" : "sidebar-close"
+        }`}
+        // style={{ position: "fixed" }}
       >
         <div>
           <Link to="/ ">
@@ -107,7 +99,6 @@ function App() {
         </div>
       </div>
       <Routes>
-<<<<<<< HEAD
         <Route
           path="/"
           element={
@@ -122,8 +113,6 @@ function App() {
         />
         <Route path="/profile" element={<Profile />} />
         <Route path="/invoices/:id" element={<Invoice />} />
-=======
->>>>>>> 3b26041824add50e36cd5751d0eef7179338365e
         <Route
           path="/"
           element={
@@ -132,17 +121,22 @@ function App() {
             </RequireAuth>
           }
         />
-        <Route path="/invoices" element={
-          <RequireAuth>
-            <Invoices />
-          </RequireAuth>
-
-        } />
-        <Route path="/profile" element={
-          <RequireAuth>
-            <Profile />
-          </RequireAuth>
-        } />
+        <Route
+          path="/invoices"
+          element={
+            <RequireAuth>
+              <Invoices />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <RequireAuth>
+              <Profile />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/invoices/:id"
           element={
@@ -151,16 +145,17 @@ function App() {
             </RequireAuth>
           }
         />
-        <Route path="/products" element={
-          <RequireAuth>
-
-            <HomePage
-              getProducts={getProducts}
-              products={products}
-              setProducts={setProducts}
-            />
-          </RequireAuth>
-        }
+        <Route
+          path="/products"
+          element={
+            <RequireAuth>
+              <HomePage
+                getProducts={getProducts}
+                products={products}
+                setProducts={setProducts}
+              />
+            </RequireAuth>
+          }
         />
         <Route
           path="/buy-products"
@@ -186,9 +181,7 @@ function App() {
             </RequireAuth>
           }
         />
-        <Route
-          path="/login"
-          element={<Login />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </div>
   );

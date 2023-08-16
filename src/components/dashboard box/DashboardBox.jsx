@@ -23,14 +23,6 @@ const DashboardBox = ({
           id: doc.id,
         }));
 
-        console.log(
-          invoices.filter((product) => {
-            console.log(new Date(product.date));
-            if (new Date(product?.date)?.getTime() === new Date().getTime())
-              return product;
-          })
-        );
-
         setInvoicesNumber(
           invoices
             .filter(
@@ -52,7 +44,9 @@ const DashboardBox = ({
     <Link
       to={to}
       className="dashboard-box"
-      onClick={() => setSearchDate && setSearchDate(new Date().getTime())}
+      onClick={() =>
+        setSearchDate && setSearchDate(new Date().setTime(0, 0, 0))
+      }
     >
       <h4 className="flex items-center">
         <Icon />

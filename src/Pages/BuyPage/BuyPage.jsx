@@ -118,9 +118,9 @@ const BuyPage = ({
             return prev + curr.price * Number(curr.selectedQuantity);
           }, 0),
           "invoice-products": selectedProducts,
-          date: new Date().toISOString().slice(0, 10),
+          date: new Date().setTime(0, 0, 0),
         });
-        console.log(new Date(Date.now()).toISOString());
+
         setProducts((pre) => {
           return pre.map((product) => {
             if (

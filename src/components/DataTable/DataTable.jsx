@@ -33,7 +33,6 @@ export default function DataTable({
   const [startIndex, setStartIndex] = useState(1);
   const [firstOrlast, setFirstOrLast] = useState("first");
   const [searchWord, setSearchWord] = useState("");
-<<<<<<< HEAD
 
   let visibleRows;
 
@@ -55,8 +54,8 @@ export default function DataTable({
     })
     .filter((product) => {
       if (product?.date && searchDate) {
-        console.log(product?.date);
-        if (new Date(product?.date)?.getTime() === searchDate) {
+        console.log(product.date, searchDate);
+        if (product?.date === searchDate) {
           return product;
         }
       } else {
@@ -73,26 +72,6 @@ export default function DataTable({
   });
 
   visibleRows = visibleRows?.slice(startIndex - 1, rowsPerPage * page);
-=======
-  // console.log(products);
-  // console.log(products.id);
-
-  const visibleRows = invoices
-    ? products
-      : products
-        ?.filter((product) => {
-          return product.name.toLowerCase().includes(searchWord.toLowerCase())
-        }
-        )
-        ?.sort(function (a, b) {
-          if (firstOrlast === "first") {
-            return a.name.localeCompare(b.name, ["ar"]);
-          } else {
-            return b.name.localeCompare(a.name, ["ar"]);
-          }
-        })
-        ?.slice(startIndex - 1, rowsPerPage * page);
->>>>>>> 3b26041824add50e36cd5751d0eef7179338365e
 
   return (
     <div className="pl-[20px] table-table">
@@ -141,7 +120,7 @@ export default function DataTable({
                 }
                 onChange={(e) => {
                   setSearchDate(
-                    new Date(e.target.value).getTime()
+                    new Date(e.target.value).setHours(0, 0, 0)
                       ? new Date(e.target.value).getTime()
                       : ""
                   );
@@ -201,7 +180,6 @@ export default function DataTable({
             </tr>
           </thead>
           <tbody>
-<<<<<<< HEAD
             {filteredProducts?.length > 0 ? (
               visibleRows.map((product) => {
                 return invoices ? (
@@ -238,36 +216,6 @@ export default function DataTable({
                       <td className="flex-row-reverse gap-1">
                         {product.price * product.selectedQuantity} <p>ج.م </p>
                       </td>
-=======
-            {products?.length > 0
-              ? visibleRows.map((product) => {
-                return invoices ? (
-                  <Link to={`${product.id}`} key={product.id}>
-                    <tr className="cursor-pointer hover:opacity-90 hover:bg-slate-100">
-                      <td>{product["invoice-number"]}</td>
-                      <td
-                        style={{ direction: "rtl", justifyContent: "start" }}
-                      >
-                        {product["invoice-date"]}
-                      </td>
-                      <td>{product["invoice-price"]} ج.م</td>
-                    </tr>
-                  </Link>
-                ) : (
-                  <tr key={product.id}>
-                    <td>{product.name}</td>
-                    <td className="flex-row-reverse gap-1">
-                      {product.price} <p>ج.م </p>
-                    </td>
-                    {print || invoice ? (
-                      <td>{product.selectedQuantity}</td>
-                    ) : null}
-                    {invoice ? null : <td>{product.quantity}</td>}
-                    {invoice ? (
-                      <td className="flex-row-reverse gap-1">
-                        {product.price * product.selectedQuantity} <p>ج.م </p>
-                      </td>
->>>>>>> 3b26041824add50e36cd5751d0eef7179338365e
                     ) : null}
 
                     {print || invoice ? null : (
@@ -297,7 +245,6 @@ export default function DataTable({
                   </tr>
                 );
               })
-<<<<<<< HEAD
             ) : (
               <h3 className="py-9 font-bold text-xl text-center">
                 {invoices
@@ -305,9 +252,6 @@ export default function DataTable({
                   : "لا يوجد اي منتجات"}
               </h3>
             )}
-=======
-              : "لا يوجد اي منتجات"}
->>>>>>> 3b26041824add50e36cd5751d0eef7179338365e
 
             {products?.length === 0 && (
               <tr className="text-3xl text-gray-400 text-center !justify-center  font-bold py-10">
@@ -316,14 +260,8 @@ export default function DataTable({
             )}
           </tbody>
         </table>
-<<<<<<< HEAD
 
         {print ? null : filteredProducts.length > 5 ? (
-=======
-        {print || invoices ? null : products?.filter((product) =>
-          product.name.toLowerCase().includes(searchWord.toLowerCase())
-        ).length > 5 ? (
->>>>>>> 3b26041824add50e36cd5751d0eef7179338365e
           <TablePagination
             rowsPerPage={rowsPerPage}
             page={page}
@@ -333,10 +271,6 @@ export default function DataTable({
             searchWord={searchWord}
           />
         ) : null}
-<<<<<<< HEAD
-=======
-        {/* {console.log(products)} */}
->>>>>>> 3b26041824add50e36cd5751d0eef7179338365e
       </div>
     </div>
   );
