@@ -35,11 +35,13 @@ function App() {
       setProducts(products);
     });
   };
-  const currentUser = useContext(AuthContext);
-  console.log(currentUser);
-  const RequireAuth = ({ children }) => {
-    return currentUser ? children : <Navigate to="/login" />;
-  };
+  // const currentUser = useContext(AuthContext);
+  // const currentUser = useContext();
+  // console.log(currentUser);
+  // const RequireAuth = ({ children }) => {
+    // return <>{children}</>;
+    // return currentUser ? children : <Navigate to="/login" />;
+  // };
 
   useEffect(() => {}, []);
   //get no quantity Products
@@ -99,86 +101,73 @@ function App() {
         </div>
       </div>
       <Routes>
+
         <Route
           path="/"
           element={
-            <Home setSearchDate={setSearchDate} searchDate={searchDate} />
+            // <RequireAuth>
+              <Home setSearchDate={setSearchDate} searchDate={searchDate}  />
+            // </RequireAuth>
           }
         />
         <Route
           path="/invoices"
           element={
-            <Invoices setSearchDate={setSearchDate} searchDate={searchDate} />
-          }
-        />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/invoices/:id" element={<Invoice />} />
-        <Route
-          path="/"
-          element={
-            <RequireAuth>
-              <Home />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/invoices"
-          element={
-            <RequireAuth>
-              <Invoices />
-            </RequireAuth>
+            // <RequireAuth>
+              <Invoices setSearchDate={setSearchDate} searchDate={searchDate} />
+            // </RequireAuth>
           }
         />
         <Route
           path="/profile"
           element={
-            <RequireAuth>
+            // <RequireAuth>
               <Profile />
-            </RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route
           path="/invoices/:id"
           element={
-            <RequireAuth>
+            // <RequireAuth>
               <Invoice />
-            </RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route
           path="/products"
           element={
-            <RequireAuth>
+            // <RequireAuth>
               <HomePage
                 getProducts={getProducts}
                 products={products}
                 setProducts={setProducts}
               />
-            </RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route
           path="/buy-products"
           element={
-            <RequireAuth>
+            // <RequireAuth>
               <BuyPage
                 setProducts={setProducts}
                 setNoQuantityProducts={setNoQuantityProducts}
                 products={products}
                 getProducts={getProducts}
               />
-            </RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route
           path="/noQuantity-product"
           element={
-            <RequireAuth>
+            // <RequireAuth>
               <NoQuantityProduct
                 noQuantityProducts={noQuantityProducts}
                 setNoQuantityProducts={setNoQuantityProducts}
               />
-            </RequireAuth>
+            // </RequireAuth>
           }
         />
         <Route path="/login" element={<Login />} />

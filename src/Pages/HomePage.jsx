@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Form from "../components/Form/Form";
 import {
   collection,
@@ -24,23 +24,29 @@ const HomePage = ({ getProducts, products, setProducts }) => {
       .number()
       .required("يجب ادخال هذا الحقل ويجب ان يكون رقما")
       .typeError("يجب ادخال هذا الحقل ويجب ان يكون رقما"),
+    bought: yup
+      .number()
+      .required('يجب ادخال هذا الحقل')
+      .typeError("يجب ادخال هذا الحقل ويجب ان يكون رقما"),
     quantity: yup
       .number()
       .required("يجب ادخال هذا الحقل ويجب ان يكون رقما")
       .typeError("يجب ادخال هذا الحقل ويجب ان يكون رقما"),
   });
 
-  const onSubmit = async ({ name, price, quantity }, actions) => {
+  const onSubmit = async ({ name, price, bought, quantity }, actions) => {
     if (job === "add") {
       const docRef = await addDoc(collection(db, "products"), {
         name,
         price,
+        bought,
         quantity,
       });
     } else {
       const updateRef = await updateDoc(doc(db, "products", id), {
         name,
         price,
+        bought,
         quantity,
       });
     }
@@ -53,6 +59,7 @@ const HomePage = ({ getProducts, products, setProducts }) => {
       name: "",
       quantity: "",
       price: "",
+      bought: "",
     },
     validationSchema: schema,
     onSubmit,
@@ -80,7 +87,7 @@ const HomePage = ({ getProducts, products, setProducts }) => {
         setId={setId}
         setFieldValue={formik.setFieldValue}
         deleteProductHandler={deleteProductHandler}
-        tableHeads={["اسم المنتج", "سعر المنتج", "كميه المنتج", "أعدادات"]}
+        tableHeads={["اسم المنتج", "سعر الشراء", "سعر البيع", "كميه المنتج", "أعدادات"]}
       />
       <Form
         setModal={setModal}
@@ -94,8 +101,13 @@ const HomePage = ({ getProducts, products, setProducts }) => {
             type: "text",
           },
           {
-            title: "السعر",
+            title: "السعر الشراء",
             name: "price",
+            type: "number",
+          },
+          {
+            title: "السعر البيع",
+            name: "bought",
             type: "number",
           },
           {

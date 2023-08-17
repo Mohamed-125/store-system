@@ -28,6 +28,7 @@ export default function DataTable({
 }) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("price");
+  const [bought, setbought] = useState("bought");
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(print ? 50 : 5);
   const [startIndex, setStartIndex] = useState(1);
@@ -35,19 +36,15 @@ export default function DataTable({
   const [searchWord, setSearchWord] = useState("");
 
   let visibleRows;
-
-  console.log();
-
+            {/* ///////////////filtering //////////////////*/}
   let filteredProducts = products
     .filter((product) => {
       if (product.name) {
         return product.name.toLowerCase().includes(searchWord.toLowerCase());
-      } else if (product["invoice-number"]) {
-        if (
-          String(product["invoice-number"])
-            .toLowerCase()
-            .includes(searchWord.toLowerCase())
-        ) {
+      } 
+      else if (product["invoice-number"]) {
+
+        if (String(product["invoice-number"]).toLowerCase().includes(searchWord.toLowerCase())) {
           return product;
         }
       }
@@ -62,7 +59,6 @@ export default function DataTable({
         return product;
       }
     });
-
   visibleRows = filteredProducts?.sort(function (a, b) {
     if (firstOrlast === "first") {
       return a?.name?.localeCompare(b.name, ["ar"]);
@@ -80,10 +76,10 @@ export default function DataTable({
           {print
             ? "الفاتوره"
             : invoice
-            ? "منتجات الفاتوره"
-            : invoices
-            ? "الفواتير"
-            : "المنتجات"}
+              ? "منتجات الفاتوره"
+              : invoices
+                ? "الفواتير"
+                : "المنتجات"}
         </h3>
         {print || invoice || invoices || noQuntity ? null : (
           <button
@@ -147,6 +143,7 @@ export default function DataTable({
       <div className="table-container container">
         <table>
           <thead>
+            {/*///////////////////////////// sorting in column اسم المنتج  ///////////////////////////*/}
             <tr>
               {tableHeads.map((head, n) => {
                 return (
@@ -172,12 +169,12 @@ export default function DataTable({
                         <AiOutlineArrowDown />
                       )
                     ) : null}
-
                     {head}
                   </th>
                 );
               })}
             </tr>
+            {/*///////////////////////////// sorting in column اسم المنتج  ///////////////////////////*/}
           </thead>
           <tbody>
             {filteredProducts?.length > 0 ? (
@@ -204,13 +201,21 @@ export default function DataTable({
                   </tr>
                 ) : (
                   <tr key={product.id}>
+                    {/* ////////////////////////on page show product////////////////////////// */}
                     <td>{product.name}</td>
                     <td className="flex-row-reverse gap-1">
                       {product.price} <p>ج.م </p>
                     </td>
+                    <td className="flex-row-reverse gap-1">
+                      {product.bought} <p>ج.م </p>
+                    </td>
                     {print || invoice ? (
                       <td>{product.selectedQuantity}</td>
-                    ) : null}
+                    )
+                      : null
+                    }
+                    {/* ////////////////////////on page show product////////////////////////// */}
+
                     {invoice ? null : <td>{product.quantity}</td>}
                     {invoice ? (
                       <td className="flex-row-reverse gap-1">
@@ -226,6 +231,7 @@ export default function DataTable({
                             setModal(true);
                             setFieldValue("name", product.name);
                             setFieldValue("price", product.price);
+                            setFieldValue("bought", product.bought);
                             setFieldValue("quantity", product.quantity);
                             setId(product.id);
                           }}
@@ -252,7 +258,7 @@ export default function DataTable({
                   : "لا يوجد اي منتجات"}
               </h3>
             )}
-
+            {/*////////////////////// if no quantaty//////////////////////////// */}
             {products?.length === 0 && (
               <tr className="text-3xl text-gray-400 text-center !justify-center  font-bold py-10">
                 <td className=" !justify-center">لا توجد منتجات</td>
@@ -260,7 +266,7 @@ export default function DataTable({
             )}
           </tbody>
         </table>
-
+        {/* ///////////////////////////////////////pagination //////////////////// */}
         {print ? null : filteredProducts.length > 5 ? (
           <TablePagination
             rowsPerPage={rowsPerPage}

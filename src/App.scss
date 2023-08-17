@@ -21,10 +21,10 @@ input {
 }
 
 .container {
-  max-width: 1260px;
+  // max-width: ;
   margin-inline: auto;
   padding: 20px 60px;
-  // width: 95% !important;
+  width: 100% !important;
 }
 
 @mixin buttonSytle($state) {
