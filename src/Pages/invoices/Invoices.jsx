@@ -20,6 +20,7 @@ const Invoices = ({ setSearchDate, searchDate, invoices, setInvoices }) => {
 
   return (
     <div>
+      {/* <h1 className="text-center">Invoice</h1> */}
       <DataTable
         products={invoices}
         setSearchDate={setSearchDate}

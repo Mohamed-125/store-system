@@ -29,6 +29,7 @@ export default function DataTable({
 }) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("price");
+  const [bought, setbought] = useState("bought");
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(print ? 50 : 20);
   const [startIndex, setStartIndex] = useState(1);
@@ -62,7 +63,6 @@ export default function DataTable({
         return product;
       }
     });
-
   visibleRows = filteredProducts?.sort(function (a, b) {
     if (firstOrlast === "first") {
       return a?.name?.localeCompare(b.name, ["ar"]);
@@ -150,6 +150,7 @@ export default function DataTable({
       <div className="table-container container">
         <table>
           <thead>
+            {/*///////////////////////////// sorting in column اسم المنتج  ///////////////////////////*/}
             <tr>
               {tableHeads.map((head, n) => {
                 return (
@@ -175,12 +176,12 @@ export default function DataTable({
                         <AiOutlineArrowDown />
                       )
                     ) : null}
-
                     {head}
                   </th>
                 );
               })}
             </tr>
+            {/*///////////////////////////// sorting in column اسم المنتج  ///////////////////////////*/}
           </thead>
           <tbody>
             {filteredProducts?.length > 0 ? (
@@ -208,6 +209,7 @@ export default function DataTable({
                   </tr>
                 ) : (
                   <tr key={product.id}>
+                    {/* ////////////////////////on page show product////////////////////////// */}
                     <td>{product.name}</td>
                     <td className="flex-row-reverse gap-1">
                       {product.sellPrice} <p>ج.م </p>
@@ -263,7 +265,7 @@ export default function DataTable({
                   : "لا يوجد اي منتجات"}
               </h3>
             )}
-
+            {/*////////////////////// if no quantaty//////////////////////////// */}
             {products?.length === 0 && (
               <tr className="text-3xl text-gray-400 text-center !justify-center  font-bold py-10">
                 <td className=" !justify-center">لا توجد منتجات</td>
