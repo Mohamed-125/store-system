@@ -10,13 +10,9 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
+import axios from "axios";
 
-const BuyPage = ({
-  products,
-  setProducts,
-  setNoQuantityProducts,
-  getProducts,
-}) => {
+const BuyPage = ({ products, setProducts, getInvoices }) => {
   const [selectedProducts, setSelectedProducts] = useState([]);
   const [searchWord, setSearchWord] = useState("");
 
@@ -27,7 +23,7 @@ const BuyPage = ({
           if (pro.id === product.id && pro.selectedQuantity < pro.quantity) {
             return {
               ...pro,
-              selectedQuantity: Number(pro.selectedQuantity) + 1,
+              selectedQuantity: Number(pro.selectedQuantity) + 1 + "",
             };
           } else {
             return pro;
@@ -39,9 +35,10 @@ const BuyPage = ({
         ...pre,
         {
           name: product.name,
-          price: product.price,
+          sellPrice: product.sellPrice,
+          buyPrice: product.buyPrice,
           quantity: product.quantity,
-          selectedQuantity: 1,
+          selectedQuantity: "1",
           id: product.id,
           img: "img",
         },
@@ -49,77 +46,50 @@ const BuyPage = ({
     }
   };
 
-  const filteredProducts = products.filter((product) => {
-    if (searchWord) {
-      if (product.name.toLowerCase().includes(searchWord.toLowerCase())) {
-        return product;
+  const filteredProducts = products
+    .filter((product) => {
+      if (searchWord) {
+        if (product.name.toLowerCase().includes(searchWord.toLowerCase())) {
+          return product;
+        }
+      } else {
+        return products;
       }
-    } else {
-      return products;
-    }
-  });
-
-  const deleteProductHandler = async (id) => {
-    await deleteDoc(doc(db, "products", id));
-    getProducts();
-  };
-
-  useEffect(() => {
-    const addNoQuantityProductsToFirebase = async ({
-      name,
-      price,
-      quantity,
-      id,
-    }) => {
-      const docRef = await addDoc(collection(db, "noQuantityProducts"), {
-        name,
-        price,
-        quantity,
-        proudctId: id,
-      });
-      // console.log(docRef);
-    };
-    products.map((pro) => {
-      if (pro.quantity === 0) {
-        setNoQuantityProducts((pre) => {
-          return [...pre, pro];
-        });
-        addNoQuantityProductsToFirebase(pro);
-        deleteProductHandler(pro.id);
-      }
-    });
-
-    // console.log("products", products);
-  }, [products]);
+    })
+    .filter((product) => product.quantity !== 0);
 
   let id;
   const payHandler = async () => {
     if (
       selectedProducts.some((pro) => {
-        if (pro.selectedQuantity === "") {
+        console.log(pro);
+        if (
+          pro.selectedQuantity === "" ||
+          pro.selectedQuantity.split("")[0] === "0"
+        ) {
           id = pro.id;
           return true;
         }
       })
     ) {
-      document
-        .getElementsByClassName(`${id}`)
-        [id].children[1].children[4].children[0].focus();
+      document.querySelector(`input[name="${id}"`).focus();
 
       alert("يجب ادخل كميه");
     } else {
       const invoiceId = Math.round(Math.random() * 100000000000 + 1);
-      // window.print();
+      console.log(new Date().setHours(0, 0, 0, 0));
+      window.print();
       try {
-        const docRef = await addDoc(collection(db, "invoices"), {
+        axios.post("http://localhost:3000/invoices", {
           "invoice-number": invoiceId,
           "invoice-date": new Date().toLocaleString("ar"),
+          date: new Date().setHours(0, 0, 0, 0),
           "invoice-price": selectedProducts.reduce((prev, curr) => {
-            return prev + curr.price * Number(curr.selectedQuantity);
+            return prev + curr.sellPrice * Number(curr.selectedQuantity);
           }, 0),
           "invoice-products": selectedProducts,
-          date: new Date().setTime(0, 0, 0),
         });
+        getInvoices();
 
         setProducts((pre) => {
           return pre.map((product) => {
@@ -140,12 +110,12 @@ const BuyPage = ({
         });
 
         selectedProducts.map((product) => {
-          const updateRef = updateDoc(doc(db, "products", product.id), {
+          axios.put("http://localhost:3000/products/" + product.id, {
             name: product.name,
             id: product.id,
-            price: product.price,
+            sellPrice: product.sellPrice,
+            buyPrice: product.buyPrice,
             quantity: product.quantity - product.selectedQuantity,
-            selectedQuantity: product.quantity,
           });
         });
 
@@ -217,7 +187,7 @@ const BuyPage = ({
                     />
                     <div className="buypage-product-details">
                       <p> الاسم : {product.name}</p>
-                      <p> السعر : {product.price}</p>
+                      <p> السعر : {product.sellPrice}</p>
                       <p> الكميه : {product.quantity}</p>
                     </div>
                   </div>
@@ -234,6 +204,7 @@ const BuyPage = ({
             <h1>الفاتوره</h1>
             {selectedProducts.length > 0 ? (
               selectedProducts?.map((product) => {
+                console.log(product);
                 const id = product.id;
                 return (
                   <div
@@ -246,17 +217,19 @@ const BuyPage = ({
                       <p style={{ direction: "rtl", justifyContent: "start" }}>
                         الاسم : {product.name}{" "}
                       </p>
-                      <p>{product.price} : سعر المنتج</p>
+                      <p>{product.sellPrice} : سعر المنتج</p>
                       <p>
-                        {product.price * product.selectedQuantity} : سعر المنتج
-                        الأجمالي
+                        {product.sellPrice * product.selectedQuantity} : سعر
+                        المنتج الأجمالي
                       </p>
                       <p>{product.quantity} : الكميه المتاحه</p>
                       <p>
                         <input
                           type="number"
                           min={1}
+                          name={id}
                           onChange={(e) => {
+                            console.log(e.target.value);
                             if (e.target.value > product.quantity) {
                               alert("الكميه غير متاحه");
                               return false;
@@ -266,7 +239,7 @@ const BuyPage = ({
                                   if (pro.id === product.id) {
                                     return {
                                       ...pro,
-                                      selectedQuantity: e.target.value,
+                                      selectedQuantity: e.target.value + "",
                                     };
                                   } else {
                                     return pro;
@@ -304,7 +277,9 @@ const BuyPage = ({
                 <p className="mb-5 text-xl ">
                   الأجمالي :
                   {selectedProducts.reduce((prev, curr) => {
-                    return prev + curr.price * Number(curr.selectedQuantity);
+                    return (
+                      prev + curr.sellPrice * Number(curr.selectedQuantity)
+                    );
                   }, 0)}{" "}
                   ج.م
                 </p>

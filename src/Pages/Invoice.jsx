@@ -3,6 +3,7 @@ import DataTable from "../components/DataTable/DataTable";
 import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
+import axios from "axios";
 
 const Invoice = () => {
   const { id } = useParams();
@@ -10,9 +11,9 @@ const Invoice = () => {
 
   useEffect(() => {
     const getInvoiceProducts = async () => {
-      const docRef = await getDoc(doc(db, "invoices", id));
-      setProducts(docRef.data()["invoice-products"]);
-      // console.log(docRef.data()["invoice-products"]);
+      axios.get("http://localhost:3000/invoices/" + id).then((invoices) => {
+        setProducts(invoices.data["invoice-products"]);
+      });
     };
     getInvoiceProducts();
   }, []);
@@ -32,7 +33,7 @@ const Invoice = () => {
       <p className="container text-2xl text-end font-bold px-0">
         اجمالي سعر الفاتوره :{" "}
         {products?.reduce((prev, curr) => {
-          return prev + curr.price * Number(curr.selectedQuantity);
+          return prev + curr.sellPrice * Number(curr.selectedQuantity);
         }, 0)}{" "}
         ج.م
       </p>{" "}

@@ -4,49 +4,15 @@ import { Link } from "react-router-dom";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 
-const DashboardBox = ({
-  title,
-  content,
-  Icon,
-  to,
-  setSearchDate,
-  searchDate,
-}) => {
-  // console.log(new Date().getTime());
-  const [invoicesNumber, setInvoicesNumber] = useState(0);
-  useEffect(() => {
-    let invoices;
-    const getInvoices = async () => {
-      await getDocs(collection(db, "invoices")).then((invoice) => {
-        invoices = invoice.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
-
-        setInvoicesNumber(
-          invoices
-            .filter(
-              (product) =>
-                new Date(product?.date)?.getTime() === new Date().getTime()
-            )
-            .reduce((prev, curr) => {
-              return prev + curr["invoice-price"];
-            }, 0)
-        );
-      });
-    };
-    getInvoices();
-  }, []);
-
-  console.log(invoicesNumber);
-
+const DashboardBox = ({ title, content, Icon, to, setSearchDate }) => {
+  console.log(to);
   return (
     <Link
       to={to}
       className="dashboard-box"
-      onClick={() =>
-        setSearchDate && setSearchDate(new Date().setTime(0, 0, 0))
-      }
+      onClick={() => {
+        title === "ارباح اليوم" ? setSearchDate(new Date()) : setSearchDate();
+      }}
     >
       <h4 className="flex items-center">
         <Icon />
@@ -54,7 +20,7 @@ const DashboardBox = ({
           ? new Intl.NumberFormat("de-DE", {
               style: "currency",
               currency: "EGP",
-            }).format(invoicesNumber)
+            }).format(content)
           : content}
       </h4>
       <p>{title.trim()}</p>

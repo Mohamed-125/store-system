@@ -25,21 +25,22 @@ export default function DataTable({
   print = false,
   searchDate,
   setSearchDate,
+  noQuantity = false,
 }) {
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("price");
   const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(print ? 50 : 5);
+  const [rowsPerPage, setRowsPerPage] = useState(print ? 50 : 20);
   const [startIndex, setStartIndex] = useState(1);
   const [firstOrlast, setFirstOrLast] = useState("first");
   const [searchWord, setSearchWord] = useState("");
 
   let visibleRows;
 
-  console.log();
+  // console.log(products);
 
   let filteredProducts = products
-    .filter((product) => {
+    ?.filter((product) => {
       if (product.name) {
         return product.name.toLowerCase().includes(searchWord.toLowerCase());
       } else if (product["invoice-number"]) {
@@ -54,8 +55,7 @@ export default function DataTable({
     })
     .filter((product) => {
       if (product?.date && searchDate) {
-        console.log(product.date, searchDate);
-        if (product?.date === searchDate) {
+        if (product?.date === searchDate.setHours(0, 0, 0, 0)) {
           return product;
         }
       } else {
@@ -83,9 +83,11 @@ export default function DataTable({
             ? "منتجات الفاتوره"
             : invoices
             ? "الفواتير"
+            : noQuantity
+            ? "المنتجات الغير موجوده"
             : "المنتجات"}
         </h3>
-        {print || invoice || invoices || noQuntity ? null : (
+        {print || invoice || invoices || noQuantity ? null : (
           <button
             className="btn max-w-[120px]"
             onClick={() => {
@@ -115,15 +117,16 @@ export default function DataTable({
                 className="p-[3px] text-right px-5 w-full max-w-[240px] "
                 value={
                   searchDate
-                    ? new Date(searchDate).toISOString().slice(0, 10)
+                    ? new Date(new Date(searchDate).setHours(24, 0, 0, 0))
+                        ?.toISOString()
+                        .slice(0, 10)
                     : ""
                 }
                 onChange={(e) => {
-                  setSearchDate(
-                    new Date(e.target.value).setHours(0, 0, 0)
-                      ? new Date(e.target.value).getTime()
-                      : ""
-                  );
+                  console.log(e.target.value);
+                  e.target.value
+                    ? setSearchDate(new Date(e.target.value))
+                    : setSearchDate("");
                 }}
               />
             </>
@@ -182,6 +185,7 @@ export default function DataTable({
           <tbody>
             {filteredProducts?.length > 0 ? (
               visibleRows.map((product) => {
+                console.log(product.id);
                 return invoices ? (
                   <tr
                     key={product.id}
@@ -206,26 +210,33 @@ export default function DataTable({
                   <tr key={product.id}>
                     <td>{product.name}</td>
                     <td className="flex-row-reverse gap-1">
-                      {product.price} <p>ج.م </p>
-                    </td>
+                      {product.sellPrice} <p>ج.م </p>
+                    </td>{" "}
+                    {invoice ? null : (
+                      <td className="flex-row-reverse gap-1">
+                        {product.buyPrice} <p>ج.م </p>
+                      </td>
+                    )}
                     {print || invoice ? (
                       <td>{product.selectedQuantity}</td>
                     ) : null}
                     {invoice ? null : <td>{product.quantity}</td>}
                     {invoice ? (
                       <td className="flex-row-reverse gap-1">
-                        {product.price * product.selectedQuantity} <p>ج.م </p>
+                        {product.sellPrice * product.selectedQuantity}{" "}
+                        <p>ج.م </p>
                       </td>
                     ) : null}
-
                     {print || invoice ? null : (
                       <td>
                         <button
                           onClick={() => {
+                            console.log("fsdfsdfsdf");
                             setJob("تعديل");
                             setModal(true);
                             setFieldValue("name", product.name);
-                            setFieldValue("price", product.price);
+                            setFieldValue("buyPrice", product.buyPrice);
+                            setFieldValue("sellPrice", product.sellPrice);
                             setFieldValue("quantity", product.quantity);
                             setId(product.id);
                           }}
@@ -261,7 +272,7 @@ export default function DataTable({
           </tbody>
         </table>
 
-        {print ? null : filteredProducts.length > 5 ? (
+        {print ? null : filteredProducts.length > rowsPerPage ? (
           <TablePagination
             rowsPerPage={rowsPerPage}
             page={page}

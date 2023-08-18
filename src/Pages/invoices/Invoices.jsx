@@ -2,19 +2,18 @@ import React, { useEffect, useState } from "react";
 import DataTable from "../../components/DataTable/DataTable";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
+import axios from "axios";
 
-const Invoices = ({ setSearchDate, searchDate }) => {
-  const [invoices, setInvoices] = useState([]);
+const Invoices = ({ setSearchDate, searchDate, invoices, setInvoices }) => {
   const getInvoices = async () => {
-    await getDocs(collection(db, "invoices")).then((invoice) => {
-      const invoices = invoice.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-
-      setInvoices(invoices);
-    });
+    await axios
+      .get("http://localhost:3000/invoices")
+      .then((invoices) => {
+        setInvoices(invoices.data.reverse());
+      })
+      .catch((error) => console.log("error", error));
   };
+
   useEffect(() => {
     getInvoices();
   }, []);

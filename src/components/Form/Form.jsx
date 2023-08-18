@@ -1,50 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 import "./Form.scss";
-import { useFormik } from "formik";
 import * as yup from "yup";
-import { db } from "../../firebase";
-
-import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
-const Form = ({ formInputs, formik, modal, setModal, job }) => {
+import { useFormik } from "formik";
+import axios from "axios";
+const Form = ({ modal, setModal, job, formik, setFieldValueFunc }) => {
   const overlayRef = useRef();
-
   useEffect(() => {
+    console.log(modal);
     if (modal) {
       overlayRef.current.style.height = `${
         document.querySelector(".form-main-div").offsetHeight + 60
       }px`;
-      console.log(job);
     }
   }, [modal]);
 
-  const schema = yup.object().shape({
-    name: yup.string().required("يجب ادخال هذا الحقل"),
-    price: yup
-      .number()
-      .required("يجب ادخال هذا الحقل ويجب ان يكون رقما")
-      .typeError("يجب ادخال هذا الحقل ويجب ان يكون رقما"),
-    quantity: yup
-      .number()
-      .required("يجب ادخال هذا الحقل ويجب ان يكون رقما")
-      .typeError("يجب ادخال هذا الحقل ويجب ان يكون رقما"),
-  });
-
-  const onSubmit = async ({ name, price, quantity }, actions) => {
-    if (job === "add") {
-      const docRef = await addDoc(collection(db, "products"), {
-        name,
-        price,
-        quantity,
-      });
-    } else {
-      const updateRef = await updateDoc(doc(db, "products", id), {
-        name,
-        price,
-        quantity,
-      });
-    }
-    actions.resetForm();
-  };
   const {
     values,
     errors,
@@ -53,7 +22,32 @@ const Form = ({ formInputs, formik, modal, setModal, job }) => {
     touched,
     handleChange,
     handleSubmit,
+    setTouched,
+    resetForm,
   } = formik;
+
+  const formInputs = [
+    {
+      title: "الأسم",
+      name: "name",
+      type: "text",
+    },
+    {
+      title: "سعر البيع",
+      name: "sellPrice",
+      type: "number",
+    },
+    {
+      title: "سعر الشراء",
+      name: "buyPrice",
+      type: "number",
+    },
+    {
+      title: "الكميه",
+      name: "quantity",
+      type: "number",
+    },
+  ];
 
   return (
     modal && (
@@ -62,7 +56,9 @@ const Form = ({ formInputs, formik, modal, setModal, job }) => {
           className="form-overlay"
           ref={overlayRef}
           onClick={() => {
+            setTouched({}, false);
             setModal(false);
+            resetForm();
           }}
         ></div>
         <form onSubmit={handleSubmit} className="form-main-div container">
@@ -104,8 +100,9 @@ const Form = ({ formInputs, formik, modal, setModal, job }) => {
               className="error-btn"
               type="button"
               onClick={(e) => {
-                // resetValues();
+                setTouched({}, false);
                 setModal(false);
+                resetForm();
               }}
             >
               الغاء
